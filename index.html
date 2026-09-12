@@ -70,6 +70,23 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 .eq-study-speak{ width:30px; height:30px; border-radius:50%; border:1px solid var(--line); background:var(--card-alt); cursor:pointer; font-size:13px; padding:0; }
 .eq-study-speak:hover{ border-color:var(--navy); }
 @media (max-width:480px){ .eq-study-item{ grid-template-columns:1fr auto; } .eq-study-back{ grid-column:1 / 2; color:var(--muted); font-size:13.5px; } }
+.eq-topbar-right{ display:flex; align-items:center; gap:10px; }
+.eq-star{ background:none; border:none; cursor:pointer; padding:0; line-height:1; font-size:19px; color:var(--muted); }
+.eq-star.active{ color:var(--gold); }
+.eq-search{ font-family:"Helvetica Neue",Arial,sans-serif; width:100%; font-size:15px; padding:12px 14px; border:1px solid var(--line); background:var(--card); color:var(--ink); margin-bottom:10px; }
+.eq-search:focus{ outline:none; border-color:var(--navy); }
+.eq-dict-count{ font-family:"Helvetica Neue",Arial,sans-serif; font-size:12.5px; color:var(--muted); margin:0 0 16px; }
+.eq-dict-item{ grid-template-columns:1fr 1fr auto; }
+.eq-dict-actions{ display:flex; align-items:center; gap:10px; }
+.eq-reading-ua{ color:var(--muted); font-style:italic; margin-top:-8px !important; }
+.eq-streak-box{ display:flex; flex-direction:column; align-items:center; margin:10px 0 4px; }
+.eq-cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:26px; font-family:"Helvetica Neue",Arial,sans-serif; }
+.eq-cal-head{ text-align:center; font-size:11px; color:var(--muted); padding-bottom:4px; }
+.eq-cal-pad{ }
+.eq-cal-cell{ aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:12.5px; border:1px solid var(--line); color:var(--muted); background:var(--card); }
+.eq-cal-cell.active{ background:var(--gold); color:#fff; font-weight:600; border-color:var(--gold); }
+.eq-cal-cell.today{ border-color:var(--navy); border-width:2px; }
+.eq-progress-section{ margin-bottom:28px; }
 </style>
 </head>
 <body>
@@ -205,6 +222,149 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     });
     return {slug:"pos-"+g.tag, label:g.label, items};
   }).filter(t=>t.items.length);
+
+  const DICTIONARY = (function(){
+    const seen = new Set();
+    const list = [];
+    TOPICS.forEach(topic=>{
+      topic.items.forEach(it=>{
+        const key = it[0].toLowerCase();
+        if(seen.has(key)) return;
+        seen.add(key);
+        list.push(it);
+      });
+    });
+    list.sort((a,b)=> a[0].localeCompare(b[0]));
+    return list;
+  })();
+
+  // ---------- reading texts ----------
+  const READING = [
+    {
+      title:"My Family", titleUa:"Моя сім'я",
+      en:["Hello! My name is Anna. I am twenty-five years old and I live in Kyiv.",
+          "I have a small family: my mother, my father and my brother.",
+          "My mother is a teacher and my father is an engineer. My brother is a student.",
+          "We live in a flat in the city centre. On Sundays we usually have dinner together.",
+          "I love my family very much."],
+      ua:["Привіт! Мене звати Анна. Мені двадцять п'ять років, і я живу в Києві.",
+          "У мене невелика сім'я: мама, тато і брат.",
+          "Моя мама — вчителька, а тато — інженер. Мій брат — студент.",
+          "Ми живемо у квартирі в центрі міста. По неділях ми зазвичай вечеряємо разом.",
+          "Я дуже люблю свою сім'ю."],
+      vocab:[["family","сім'я"],["mother","мама"],["father","тато"],["brother","брат"],["teacher","вчитель"],["engineer","інженер"],["student","студент"],["together","разом"]]
+    },
+    {
+      title:"My Daily Routine", titleUa:"Мій розпорядок дня",
+      en:["I usually get up at seven o'clock in the morning.",
+          "First, I have breakfast and drink a cup of coffee.",
+          "Then I go to work by bus. I work from nine to five.",
+          "In the evening I cook dinner and watch TV with my family.",
+          "I go to bed at eleven o'clock."],
+      ua:["Я зазвичай встаю о сьомій годині ранку.",
+          "Спочатку я снідаю і п'ю чашку кави.",
+          "Потім їду на роботу автобусом. Я працюю з дев'ятої до п'ятої.",
+          "Увечері я готую вечерю і дивлюся телевізор із родиною.",
+          "Я лягаю спати об одинадцятій годині."],
+      vocab:[["morning","ранок"],["breakfast","сніданок"],["to work","працювати"],["evening","вечір"],["to cook","готувати"],["to watch","дивитися"]]
+    },
+    {
+      title:"The Weather Today", titleUa:"Погода сьогодні",
+      en:["Today the weather is cold and windy.",
+          "In the morning it was cloudy, and now it is raining.",
+          "I think it will be sunny tomorrow.",
+          "In winter it is often cold and snowy in Ukraine.",
+          "I like warm and sunny weather the most."],
+      ua:["Сьогодні погода холодна і вітряна.",
+          "Вранці було хмарно, а зараз іде дощ.",
+          "Думаю, завтра буде сонячно.",
+          "Взимку в Україні часто холодно і сніжно.",
+          "Найбільше мені подобається тепла й сонячна погода."],
+      vocab:[["cold","холодно"],["windy","вітряно"],["cloudy","хмарно"],["rain","дощ"],["sunny","сонячно"],["winter","зима"],["snow","сніг"]]
+    },
+    {
+      title:"At the Supermarket", titleUa:"У супермаркеті",
+      en:["Yesterday I went to the supermarket to buy some food.",
+          "I bought bread, cheese, milk, apples and a bit of meat.",
+          "The bread was cheap, but the meat was quite expensive.",
+          "At the shop I also met my neighbour, and we talked for a few minutes.",
+          "Then I paid at the checkout and went home."],
+      ua:["Учора я ходила в супермаркет купити продукти.",
+          "Я купила хліб, сир, молоко, яблука і трохи м'яса.",
+          "Хліб був дешевий, а м'ясо — досить дороге.",
+          "У магазині я також зустріла сусідку, і ми поговорили кілька хвилин.",
+          "Потім я розрахувалася на касі і пішла додому."],
+      vocab:[["to buy","купувати"],["bread","хліб"],["cheese","сир"],["cheap","дешевий"],["expensive","дорогий"],["neighbour","сусід"],["to pay","платити"]]
+    },
+    {
+      title:"My Favourite Weekend", titleUa:"Мої улюблені вихідні",
+      en:["On Saturday I usually meet my friends in the park.",
+          "We walk, talk and sometimes play sport together.",
+          "In the afternoon I like to read a book or watch a film.",
+          "On Sunday my family and I often go to a restaurant for lunch.",
+          "I think weekends are the best days of the week!"],
+      ua:["У суботу я зазвичай зустрічаюся з друзями в парку.",
+          "Ми гуляємо, розмовляємо і іноді разом граємо у спорт.",
+          "Удень я люблю почитати книгу або подивитися фільм.",
+          "У неділю ми з родиною часто ходимо на обід у ресторан.",
+          "Гадаю, вихідні — найкращі дні тижня!"],
+      vocab:[["friend","друг"],["park","парк"],["to play","грати"],["to read","читати"],["film","фільм"],["restaurant","ресторан"],["weekend","вихідні"]]
+    }
+  ];
+
+  // ---------- progress: favorites, mistakes, streak (localStorage) ----------
+  const PROGRESS_KEY = "eq-progress-v1";
+  function loadProgress(){
+    try{
+      const raw = localStorage.getItem(PROGRESS_KEY);
+      if(!raw) return {days:{}, favorites:[], mistakes:{}};
+      const parsed = JSON.parse(raw);
+      return {days: parsed.days || {}, favorites: parsed.favorites || [], mistakes: parsed.mistakes || {}};
+    }catch(e){
+      return {days:{}, favorites:[], mistakes:{}};
+    }
+  }
+  const progress = loadProgress();
+  function saveProgress(){ localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); }
+
+  function dateKey(d){ return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
+  function recordActivity(){ progress.days[dateKey(new Date())] = true; saveProgress(); }
+  function computeStreak(){
+    let streak = 0;
+    const d = new Date();
+    if(!progress.days[dateKey(d)]) d.setDate(d.getDate() - 1);
+    while(progress.days[dateKey(d)]){
+      streak++;
+      d.setDate(d.getDate() - 1);
+    }
+    return streak;
+  }
+  function totalPracticeDays(){ return Object.keys(progress.days).length; }
+
+  function wordId(it){ return it[0].toLowerCase(); }
+  function isFavorite(it){ return progress.favorites.indexOf(wordId(it)) !== -1; }
+  function toggleFavorite(it){
+    const id = wordId(it);
+    const idx = progress.favorites.indexOf(id);
+    if(idx === -1) progress.favorites.push(id); else progress.favorites.splice(idx,1);
+    saveProgress();
+  }
+  function favoriteItems(){
+    return DICTIONARY.filter(it=> progress.favorites.indexOf(wordId(it)) !== -1);
+  }
+  function recordMistake(it){
+    const id = wordId(it);
+    progress.mistakes[id] = (progress.mistakes[id]||0) + 1;
+    saveProgress();
+  }
+  function mistakeItems(){
+    return Object.keys(progress.mistakes)
+      .map(id=> ({id, count: progress.mistakes[id], item: DICTIONARY.find(it=> wordId(it) === id)}))
+      .filter(x=> x.item)
+      .sort((a,b)=> b.count - a.count)
+      .slice(0, 30)
+      .map(x=> x.item);
+  }
 
   // ---------- theory data ----------
   const THEORY = [
@@ -356,8 +516,11 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
   // ---------- state ----------
   const state = {
     theme: localStorage.getItem("eq-theme") || "light",
-    view: "picker", // picker | posPicker | study | quiz | summary | theoryList | theoryArticle
+    view: "picker", // picker | posPicker | study | quiz | summary | theoryList | theoryArticle | dictionary | readingList | readingText | progress
     returnView: "picker",
+    dictQuery: "",
+    readingIndex: 0,
+    showTranslation: false,
     topic: null,
     blocks: [],
     blockIndex: 0,
@@ -424,6 +587,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 
   function nextQuestion(){
     if(state.index >= state.pool.length){
+      recordActivity();
       state.view = "summary";
       render();
       return;
@@ -431,7 +595,8 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     const item = state.pool[state.index];
     state.current = item;
     state.answered = false;
-    const others = state.topic.items.filter(it=>it!==item);
+    const sourcePool = state.topic.items.length >= 4 ? state.topic.items : DICTIONARY;
+    const others = sourcePool.filter(it=>it!==item);
     const distractors = shuffle(others).slice(0,3);
     state.options = shuffle([item, ...distractors]);
     render();
@@ -442,7 +607,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     state.answered = true;
     const correct = opt === state.current;
     if(correct) state.score++;
-    else state.missed.push(state.current);
+    else { state.missed.push(state.current); recordMistake(state.current); }
     render();
   }
 
@@ -472,23 +637,29 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     else if(state.view === "summary") renderSummary(wrap);
     else if(state.view === "theoryList") renderTheoryList(wrap);
     else if(state.view === "theoryArticle") renderTheoryArticle(wrap);
+    else if(state.view === "dictionary") renderDictionary(wrap);
+    else if(state.view === "readingList") renderReadingList(wrap);
+    else if(state.view === "readingText") renderReadingText(wrap);
+    else if(state.view === "progress") renderProgress(wrap);
   }
 
+  const MODE_TABS = [
+    {views:["picker"], label:"За темами", go:"picker"},
+    {views:["posPicker"], label:"За частинами мови", go:"posPicker"},
+    {views:["theoryList","theoryArticle"], label:"Теорія", go:"theoryList"},
+    {views:["dictionary"], label:"Словник", go:"dictionary"},
+    {views:["readingList","readingText"], label:"Читання", go:"readingList"},
+    {views:["progress"], label:"Прогрес", go:"progress"}
+  ];
   function renderModeTabs(wrap){
     const tabs = document.createElement("div"); tabs.className = "eq-tabs";
-    const t1 = document.createElement("button");
-    t1.className = "eq-tab" + (state.view === "picker" ? " active" : "");
-    t1.textContent = "За темами";
-    t1.onclick = ()=>{ state.view = "picker"; render(); };
-    const t2 = document.createElement("button");
-    t2.className = "eq-tab" + (state.view === "posPicker" ? " active" : "");
-    t2.textContent = "За частинами мови";
-    t2.onclick = ()=>{ state.view = "posPicker"; render(); };
-    const t3 = document.createElement("button");
-    t3.className = "eq-tab" + (state.view.indexOf("theory")!==-1 ? " active" : "");
-    t3.textContent = "Теорія";
-    t3.onclick = ()=>{ state.view = "theoryList"; render(); };
-    tabs.appendChild(t1); tabs.appendChild(t2); tabs.appendChild(t3);
+    MODE_TABS.forEach(t=>{
+      const btn = document.createElement("button");
+      btn.className = "eq-tab" + (t.views.indexOf(state.view)!==-1 ? " active" : "");
+      btn.textContent = t.label;
+      btn.onclick = ()=>{ state.view = t.go; render(); };
+      tabs.appendChild(btn);
+    });
     wrap.appendChild(tabs);
   }
 
@@ -578,7 +749,11 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 
     const topbar = document.createElement("div"); topbar.className = "eq-topbar";
     const left = document.createElement("span"); left.textContent = state.topic.label + blockLabel();
-    const right = document.createElement("span"); right.textContent = (state.index+1) + " / " + state.pool.length + " · рахунок: " + state.score;
+    const right = document.createElement("span"); right.className = "eq-topbar-right";
+    const scoreSpan = document.createElement("span"); scoreSpan.textContent = (state.index+1) + " / " + state.pool.length + " · рахунок: " + state.score;
+    const starBtn = document.createElement("button"); starBtn.className = "eq-star" + (isFavorite(state.current) ? " active" : ""); starBtn.textContent = isFavorite(state.current) ? "★" : "☆"; starBtn.title = "Додати до обраного";
+    starBtn.onclick = ()=>{ toggleFavorite(state.current); render(); };
+    right.appendChild(scoreSpan); right.appendChild(starBtn);
     topbar.appendChild(left); topbar.appendChild(right);
     wrap.appendChild(topbar);
 
@@ -705,6 +880,202 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       nav.appendChild(next);
     }
     if(nav.children.length) wrap.appendChild(nav);
+  }
+
+  function renderDictionary(wrap){
+    renderModeTabs(wrap);
+    const kicker = document.createElement("p"); kicker.className = "eq-kicker"; kicker.textContent = "Англійська · рівень A2";
+    const title = document.createElement("h1"); title.className = "eq-title"; title.textContent = "Словник";
+    wrap.appendChild(kicker); wrap.appendChild(title);
+
+    const search = document.createElement("input"); search.type = "text"; search.className = "eq-search";
+    search.placeholder = "Пошук слова англійською або українською…";
+    search.value = state.dictQuery;
+    search.id = "eq-dict-search";
+    search.oninput = (e)=>{ state.dictQuery = e.target.value; render(); const el = document.getElementById("eq-dict-search"); if(el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } };
+    wrap.appendChild(search);
+
+    const q = state.dictQuery.trim().toLowerCase();
+    const filtered = q ? DICTIONARY.filter(it=> it[0].toLowerCase().indexOf(q)!==-1 || it[1].toLowerCase().indexOf(q)!==-1) : DICTIONARY;
+
+    const count = document.createElement("p"); count.className = "eq-dict-count"; count.textContent = filtered.length + " із " + DICTIONARY.length + " слів";
+    wrap.appendChild(count);
+
+    const list = document.createElement("div"); list.className = "eq-study-list";
+    filtered.slice(0, 200).forEach(it=>{
+      const row = document.createElement("div"); row.className = "eq-study-item eq-dict-item";
+      const front = document.createElement("span"); front.className = "eq-study-front"; front.textContent = it[0];
+      const back = document.createElement("span"); back.className = "eq-study-back"; back.textContent = it[1];
+      const actions = document.createElement("span"); actions.className = "eq-dict-actions";
+      const starBtn = document.createElement("button"); starBtn.className = "eq-star" + (isFavorite(it) ? " active" : ""); starBtn.textContent = isFavorite(it) ? "★" : "☆";
+      starBtn.onclick = ()=>{ toggleFavorite(it); render(); };
+      const speakBtn = document.createElement("button"); speakBtn.className = "eq-study-speak"; speakBtn.textContent = "🔊"; speakBtn.title = "Прослухати";
+      speakBtn.onclick = ()=> speakEnglish(it[0]);
+      actions.appendChild(starBtn); actions.appendChild(speakBtn);
+      row.appendChild(front); row.appendChild(back); row.appendChild(actions);
+      list.appendChild(row);
+    });
+    wrap.appendChild(list);
+    if(filtered.length > 200){
+      const more = document.createElement("p"); more.className = "eq-dict-count"; more.textContent = "Уточніть пошук, щоб побачити більше слів.";
+      wrap.appendChild(more);
+    }
+  }
+
+  function renderReadingList(wrap){
+    renderModeTabs(wrap);
+    const kicker = document.createElement("p"); kicker.className = "eq-kicker"; kicker.textContent = "Англійська · рівень A2";
+    const title = document.createElement("h1"); title.className = "eq-title"; title.textContent = "Тексти для читання";
+    wrap.appendChild(kicker); wrap.appendChild(title);
+
+    READING.forEach((text, i)=>{
+      const item = document.createElement("button"); item.className = "eq-theory-list-item";
+      item.textContent = text.title + " — " + text.titleUa;
+      item.onclick = ()=>{ state.readingIndex = i; state.showTranslation = false; state.view = "readingText"; render(); };
+      wrap.appendChild(item);
+    });
+  }
+
+  function renderReadingText(wrap){
+    const back = document.createElement("button"); back.className = "eq-back"; back.textContent = "← Усі тексти";
+    back.onclick = ()=>{ state.view = "readingList"; render(); };
+    wrap.appendChild(back);
+
+    const text = READING[state.readingIndex];
+    const kicker = document.createElement("p"); kicker.className = "eq-kicker"; kicker.textContent = "Читання";
+    const title = document.createElement("h1"); title.className = "eq-title"; title.textContent = text.title;
+    wrap.appendChild(kicker); wrap.appendChild(title);
+
+    const article = document.createElement("div"); article.className = "eq-theory-article";
+    text.en.forEach((sentence, i)=>{
+      const p = document.createElement("p"); p.textContent = sentence;
+      article.appendChild(p);
+      if(state.showTranslation){
+        const ua = document.createElement("p"); ua.className = "eq-reading-ua"; ua.textContent = text.ua[i];
+        article.appendChild(ua);
+      }
+    });
+    wrap.appendChild(article);
+
+    const btnrow = document.createElement("div"); btnrow.className = "eq-btnrow";
+    const speakAll = document.createElement("button"); speakAll.className = "eq-btn-secondary"; speakAll.textContent = "🔊 Прослухати текст";
+    speakAll.onclick = ()=> speakEnglish(text.en.join(" "));
+    const toggleBtn = document.createElement("button"); toggleBtn.className = "eq-btn-secondary";
+    toggleBtn.textContent = state.showTranslation ? "Сховати переклад" : "Показати переклад";
+    toggleBtn.onclick = ()=>{ state.showTranslation = !state.showTranslation; render(); };
+    btnrow.appendChild(speakAll); btnrow.appendChild(toggleBtn);
+    wrap.appendChild(btnrow);
+
+    const vocabTitle = document.createElement("p"); vocabTitle.className = "eq-missed-title"; vocabTitle.style.marginTop = "26px"; vocabTitle.textContent = "Ключові слова:";
+    wrap.appendChild(vocabTitle);
+    const list = document.createElement("div"); list.className = "eq-study-list";
+    text.vocab.forEach(it=>{
+      const row = document.createElement("div"); row.className = "eq-study-item";
+      const front = document.createElement("span"); front.className = "eq-study-front"; front.textContent = it[0];
+      const back = document.createElement("span"); back.className = "eq-study-back"; back.textContent = it[1];
+      const speakBtn = document.createElement("button"); speakBtn.className = "eq-study-speak"; speakBtn.textContent = "🔊";
+      speakBtn.onclick = ()=> speakEnglish(it[0]);
+      row.appendChild(front); row.appendChild(back); row.appendChild(speakBtn);
+      list.appendChild(row);
+    });
+    wrap.appendChild(list);
+
+    const nav = document.createElement("div"); nav.className = "eq-btnrow";
+    if(state.readingIndex > 0){
+      const prev = document.createElement("button"); prev.className = "eq-btn-secondary"; prev.textContent = "← Попередній текст";
+      prev.onclick = ()=>{ state.readingIndex--; state.showTranslation = false; render(); };
+      nav.appendChild(prev);
+    }
+    if(state.readingIndex < READING.length - 1){
+      const next = document.createElement("button"); next.className = "eq-btn-primary"; next.textContent = "Наступний текст →";
+      next.onclick = ()=>{ state.readingIndex++; state.showTranslation = false; render(); };
+      nav.appendChild(next);
+    }
+    if(nav.children.length) wrap.appendChild(nav);
+  }
+
+  function renderCalendar(wrap){
+    const now = new Date();
+    const year = now.getFullYear(), month = now.getMonth();
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+    const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
+    const monthNames = ["Січень","Лютий","Березень","Квітень","Травень","Червень","Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"];
+
+    const label = document.createElement("p"); label.className = "eq-missed-title"; label.textContent = monthNames[month] + " " + year;
+    wrap.appendChild(label);
+
+    const grid = document.createElement("div"); grid.className = "eq-cal-grid";
+    ["Пн","Вт","Ср","Чт","Пт","Сб","Нд"].forEach(w=>{
+      const h = document.createElement("div"); h.className = "eq-cal-head"; h.textContent = w;
+      grid.appendChild(h);
+    });
+    for(let i=0;i<firstWeekday;i++){
+      const pad = document.createElement("div"); pad.className = "eq-cal-pad";
+      grid.appendChild(pad);
+    }
+    for(let d=1; d<=daysInMonth; d++){
+      const key = year + "-" + String(month+1).padStart(2,"0") + "-" + String(d).padStart(2,"0");
+      const cell = document.createElement("div");
+      cell.className = "eq-cal-cell" + (progress.days[key] ? " active" : "") + (d === now.getDate() ? " today" : "");
+      cell.textContent = d;
+      grid.appendChild(cell);
+    }
+    wrap.appendChild(grid);
+  }
+
+  function renderProgress(wrap){
+    renderModeTabs(wrap);
+    const kicker = document.createElement("p"); kicker.className = "eq-kicker"; kicker.textContent = "Англійська · рівень A2";
+    const title = document.createElement("h1"); title.className = "eq-title"; title.textContent = "Прогрес";
+    wrap.appendChild(kicker); wrap.appendChild(title);
+
+    const streak = computeStreak();
+    const streakBox = document.createElement("div"); streakBox.className = "eq-streak-box";
+    const streakNum = document.createElement("div"); streakNum.className = "eq-summary-score"; streakNum.style.margin = "0"; streakNum.textContent = streak;
+    const streakLabel = document.createElement("div"); streakLabel.className = "eq-dict-count"; streakLabel.textContent = "днів поспіль";
+    streakBox.appendChild(streakNum); streakBox.appendChild(streakLabel);
+    wrap.appendChild(streakBox);
+
+    const totalLabel = document.createElement("p"); totalLabel.className = "eq-dict-count"; totalLabel.style.textAlign = "center"; totalLabel.style.marginBottom = "20px";
+    totalLabel.textContent = "Усього днів практики: " + totalPracticeDays();
+    wrap.appendChild(totalLabel);
+
+    renderCalendar(wrap);
+
+    const fav = favoriteItems();
+    const favSection = document.createElement("div"); favSection.className = "eq-progress-section";
+    const favTitle = document.createElement("p"); favTitle.className = "eq-missed-title"; favTitle.textContent = "★ Обране (" + fav.length + ")";
+    favSection.appendChild(favTitle);
+    if(fav.length){
+      const favBtn = document.createElement("button"); favBtn.className = "eq-btn-primary"; favBtn.textContent = "Практикувати обране";
+      favBtn.onclick = ()=> startQuiz({slug:"favorites", label:"Обране", items: fav}, "progress");
+      favSection.appendChild(favBtn);
+    } else {
+      const empty = document.createElement("p"); empty.className = "eq-dict-count"; empty.textContent = "Натисніть ☆ біля слова в тесті або словнику, щоб додати його сюди.";
+      favSection.appendChild(empty);
+    }
+    wrap.appendChild(favSection);
+
+    const mistakes = mistakeItems();
+    const mistSection = document.createElement("div"); mistSection.className = "eq-progress-section";
+    const mistTitle = document.createElement("p"); mistTitle.className = "eq-missed-title"; mistTitle.textContent = "Слова з помилками (" + mistakes.length + ")";
+    mistSection.appendChild(mistTitle);
+    if(mistakes.length){
+      const mistBtn = document.createElement("button"); mistBtn.className = "eq-btn-primary"; mistBtn.textContent = "Практикувати помилки";
+      mistBtn.onclick = ()=> startQuiz({slug:"mistakes", label:"Помилки", items: mistakes}, "progress");
+      mistSection.appendChild(mistBtn);
+      mistakes.slice(0,10).forEach(it=>{
+        const row = document.createElement("div"); row.className = "eq-missed-item";
+        const en = document.createElement("span"); en.textContent = it[0];
+        const ua = document.createElement("span"); ua.textContent = it[1] + " · ×" + progress.mistakes[wordId(it)];
+        row.appendChild(en); row.appendChild(ua);
+        mistSection.appendChild(row);
+      });
+    } else {
+      const empty = document.createElement("p"); empty.className = "eq-dict-count"; empty.textContent = "Поки що немає помилок — чудовий результат!";
+      mistSection.appendChild(empty);
+    }
+    wrap.appendChild(mistSection);
   }
 
   render();
