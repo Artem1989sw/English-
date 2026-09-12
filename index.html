@@ -87,6 +87,12 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 .eq-cal-cell.active{ background:var(--gold); color:#fff; font-weight:600; border-color:var(--gold); }
 .eq-cal-cell.today{ border-color:var(--navy); border-width:2px; }
 .eq-progress-section{ margin-bottom:28px; }
+.eq-level-badge{ font-family:"Helvetica Neue",Arial,sans-serif; font-size:10px; font-weight:700; letter-spacing:.03em; padding:2px 7px; border-radius:2px; color:#fff; white-space:nowrap; }
+.eq-level-badge.lvl-a1{ background:var(--good); }
+.eq-level-badge.lvl-a2{ background:var(--gold); }
+.eq-level-badge.lvl-b1{ background:var(--navy-solid); }
+.eq-level-badge.lvl-b2{ background:var(--bad); }
+.eq-study-front-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 </style>
 </head>
 <body>
@@ -95,110 +101,152 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
   const root = document.getElementById("eq-app");
 
   // ---------- vocabulary data ----------
-  // each item: [english, ukrainian, part-of-speech tag]
+  // each item: [english, ukrainian, part-of-speech tag, CEFR level]
   // tags: n = noun, v = verb, adj = adjective, other = adverb/pronoun/numeral/conjunction/phrase
   const TOPICS = [
     {slug:"family", label:"Сім'я", items:[
-      ["mother","мама","n"],["father","тато","n"],["parents","батьки","n"],["sister","сестра","n"],["brother","брат","n"],
-      ["son","син","n"],["daughter","дочка","n"],["husband","чоловік (у шлюбі)","n"],["wife","дружина","n"],["grandmother","бабуся","n"],
-      ["grandfather","дідусь","n"],["aunt","тітка","n"],["uncle","дядько","n"],["cousin","двоюрідний брат/сестра","n"],["baby","немовля","n"],
-      ["child","дитина","n"],["family","сім'я","n"],["friend","друг","n"],["neighbour","сусід","n"],["relative","родич","n"]
+      ["mother","мама","n","A1"],["father","тато","n","A1"],["parents","батьки","n","A1"],["sister","сестра","n","A1"],["brother","брат","n","A1"],
+      ["son","син","n","A1"],["daughter","дочка","n","A1"],["husband","чоловік (у шлюбі)","n","A1"],["wife","дружина","n","A1"],["grandmother","бабуся","n","A1"],
+      ["grandfather","дідусь","n","A1"],["aunt","тітка","n","A2"],["uncle","дядько","n","A2"],["cousin","двоюрідний брат/сестра","n","A2"],["baby","немовля","n","A1"],
+      ["child","дитина","n","A1"],["children","діти","n","A1"],["family","сім'я","n","A1"],["friend","друг","n","A1"],["neighbour","сусід","n","A2"],["relative","родич","n","B1"],
+      ["twins","близнюки","n","B1"],["nephew","племінник","n","B1"],["niece","племінниця","n","B1"],["teenager","підліток","n","A2"],["adult","дорослий","n","A2"]
     ]},
     {slug:"numbers", label:"Числа", items:[
-      ["one","один","other"],["two","два","other"],["three","три","other"],["four","чотири","other"],["five","п'ять","other"],
-      ["six","шість","other"],["seven","сім","other"],["eight","вісім","other"],["nine","дев'ять","other"],["ten","десять","other"],
-      ["eleven","одинадцять","other"],["twelve","дванадцять","other"],["twenty","двадцять","other"],["thirty","тридцять","other"],["hundred","сто","other"],
-      ["thousand","тисяча","other"],["first","перший","adj"],["second","другий","adj"],["third","третій","adj"],["last","останній","adj"]
+      ["one","один","other","A1"],["two","два","other","A1"],["three","три","other","A1"],["four","чотири","other","A1"],["five","п'ять","other","A1"],
+      ["six","шість","other","A1"],["seven","сім","other","A1"],["eight","вісім","other","A1"],["nine","дев'ять","other","A1"],["ten","десять","other","A1"],
+      ["eleven","одинадцять","other","A1"],["twelve","дванадцять","other","A1"],["twenty","двадцять","other","A1"],["thirty","тридцять","other","A1"],
+      ["forty","сорок","other","A1"],["fifty","п'ятдесят","other","A1"],["sixty","шістдесят","other","A2"],["seventy","сімдесят","other","A2"],
+      ["eighty","вісімдесят","other","A2"],["ninety","дев'яносто","other","A2"],["hundred","сто","other","A1"],
+      ["thousand","тисяча","other","A2"],["million","мільйон","other","B1"],
+      ["first","перший","adj","A2"],["second","другий","adj","A2"],["third","третій","adj","A2"],["fourth","четвертий","adj","A2"],
+      ["fifth","п'ятий","adj","A2"],["tenth","десятий","adj","B1"],["last","останній","adj","A2"]
     ]},
     {slug:"colors", label:"Кольори", items:[
-      ["red","червоний","adj"],["blue","синій","adj"],["green","зелений","adj"],["yellow","жовтий","adj"],["black","чорний","adj"],
-      ["white","білий","adj"],["grey","сірий","adj"],["brown","коричневий","adj"],["orange","оранжевий","adj"],["pink","рожевий","adj"],
-      ["purple","фіолетовий","adj"],["light","світлий","adj"],["dark","темний","adj"]
+      ["red","червоний","adj","A1"],["blue","синій","adj","A1"],["green","зелений","adj","A1"],["yellow","жовтий","adj","A1"],["black","чорний","adj","A1"],
+      ["white","білий","adj","A1"],["grey","сірий","adj","A2"],["brown","коричневий","adj","A2"],["orange","оранжевий","adj","A1"],["pink","рожевий","adj","A2"],
+      ["purple","фіолетовий","adj","A2"],["light","світлий","adj","A2"],["dark","темний","adj","A2"],["golden","золотистий","adj","B1"],["silver","сріблястий","adj","B1"]
     ]},
     {slug:"food", label:"Їжа та напої", items:[
-      ["bread","хліб","n"],["cheese","сир","n"],["meat","м'ясо","n"],["fish","риба","n"],["egg","яйце","n"],
-      ["milk","молоко","n"],["water","вода","n"],["juice","сік","n"],["tea","чай","n"],["coffee","кава","n"],
-      ["apple","яблуко","n"],["banana","банан","n"],["potato","картопля","n"],["tomato","помідор","n"],["rice","рис","n"],
-      ["soup","суп","n"],["salad","салат","n"],["sugar","цукор","n"],["salt","сіль","n"],["breakfast","сніданок","n"],
-      ["lunch","обід","n"],["dinner","вечеря","n"],["hungry","голодний","adj"],["thirsty","спраглий","adj"],["delicious","смачний","adj"]
+      ["bread","хліб","n","A1"],["cheese","сир","n","A1"],["meat","м'ясо","n","A1"],["fish","риба","n","A1"],["egg","яйце","n","A1"],
+      ["milk","молоко","n","A1"],["water","вода","n","A1"],["juice","сік","n","A1"],["tea","чай","n","A1"],["coffee","кава","n","A1"],
+      ["apple","яблуко","n","A1"],["banana","банан","n","A1"],["potato","картопля","n","A1"],["tomato","помідор","n","A1"],["rice","рис","n","A2"],
+      ["soup","суп","n","A2"],["salad","салат","n","A2"],["sugar","цукор","n","A2"],["salt","сіль","n","A2"],["breakfast","сніданок","n","A1"],
+      ["lunch","обід","n","A1"],["dinner","вечеря","n","A1"],["hungry","голодний","adj","A1"],["thirsty","спраглий","adj","A2"],["delicious","смачний","adj","A2"],
+      ["vegetable","овоч","n","A2"],["fruit","фрукт","n","A2"],["pizza","піца","n","A1"],["sandwich","бутерброд","n","A2"],
+      ["cake","торт","n","A2"],["chocolate","шоколад","n","A2"],["butter","масло","n","A2"],["yogurt","йогурт","n","B1"]
     ]},
     {slug:"house", label:"Дім та меблі", items:[
-      ["house","будинок","n"],["flat","квартира","n"],["room","кімната","n"],["kitchen","кухня","n"],["bedroom","спальня","n"],
-      ["bathroom","ванна кімната","n"],["living room","вітальня","n"],["door","двері","n"],["window","вікно","n"],["table","стіл","n"],
-      ["chair","стілець","n"],["bed","ліжко","n"],["sofa","диван","n"],["lamp","лампа","n"],["mirror","дзеркало","n"],
-      ["shelf","полиця","n"],["wall","стіна","n"],["floor","підлога","n"],["roof","дах","n"],["garden","сад","n"]
+      ["house","будинок","n","A1"],["flat","квартира","n","A1"],["room","кімната","n","A1"],["kitchen","кухня","n","A1"],["bedroom","спальня","n","A1"],
+      ["bathroom","ванна кімната","n","A1"],["living room","вітальня","n","A2"],["door","двері","n","A1"],["window","вікно","n","A1"],["table","стіл","n","A1"],
+      ["chair","стілець","n","A1"],["bed","ліжко","n","A1"],["sofa","диван","n","A2"],["lamp","лампа","n","A2"],["mirror","дзеркало","n","A2"],
+      ["shelf","полиця","n","A2"],["wall","стіна","n","A2"],["floor","підлога","n","A2"],["roof","дах","n","B1"],["garden","сад","n","A2"],
+      ["garage","гараж","n","A2"],["balcony","балкон","n","B1"],["ceiling","стеля","n","B1"],["stairs","сходи","n","A2"],
+      ["key","ключ","n","A1"],["television","телевізор","n","A1"]
     ]},
     {slug:"clothes", label:"Одяг", items:[
-      ["shirt","сорочка","n"],["T-shirt","футболка","n"],["trousers","штани","n"],["jeans","джинси","n"],["dress","сукня","n"],
-      ["skirt","спідниця","n"],["jacket","куртка","n"],["coat","пальто","n"],["shoes","взуття","n"],["socks","шкарпетки","n"],
-      ["hat","капелюх/шапка","n"],["scarf","шарф","n"],["gloves","рукавички","n"],["belt","ремінь","n"],["bag","сумка","n"]
+      ["shirt","сорочка","n","A1"],["T-shirt","футболка","n","A1"],["trousers","штани","n","A1"],["jeans","джинси","n","A1"],["dress","сукня","n","A1"],
+      ["skirt","спідниця","n","A2"],["jacket","куртка","n","A1"],["coat","пальто","n","A2"],["shoes","взуття","n","A1"],["socks","шкарпетки","n","A1"],
+      ["hat","капелюх/шапка","n","A1"],["scarf","шарф","n","A2"],["gloves","рукавички","n","A2"],["belt","ремінь","n","A2"],["bag","сумка","n","A1"],
+      ["sweater","светр","n","A2"],["boots","чоботи","n","A2"],["suit","костюм","n","B1"],["tie","краватка","n","B1"],["umbrella","парасолька","n","A2"]
     ]},
     {slug:"body", label:"Тіло", items:[
-      ["head","голова","n"],["face","обличчя","n"],["eye","око","n"],["ear","вухо","n"],["nose","ніс","n"],
-      ["mouth","рот","n"],["hand","рука (кисть)","n"],["arm","рука","n"],["leg","нога","n"],["foot","стопа","n"],
-      ["hair","волосся","n"],["back","спина","n"],["finger","палець","n"],["heart","серце","n"],["tooth","зуб","n"]
+      ["head","голова","n","A1"],["face","обличчя","n","A1"],["eye","око","n","A1"],["ear","вухо","n","A1"],["nose","ніс","n","A1"],
+      ["mouth","рот","n","A1"],["hand","рука (кисть)","n","A1"],["arm","рука","n","A1"],["leg","нога","n","A1"],["foot","стопа","n","A1"],
+      ["hair","волосся","n","A1"],["back","спина","n","A2"],["finger","палець","n","A2"],["heart","серце","n","A2"],["tooth","зуб","n","A2"],
+      ["shoulder","плече","n","B1"],["knee","коліно","n","B1"],["stomach","живіт","n","A2"],["skin","шкіра","n","B1"],["neck","шия","n","A2"]
     ]},
     {slug:"animals", label:"Тварини", items:[
-      ["dog","собака","n"],["cat","кіт","n"],["bird","птах","n"],["horse","кінь","n"],["cow","корова","n"],
-      ["pig","свиня","n"],["sheep","вівця","n"],["fish","риба","n"],["mouse","миша","n"],["rabbit","кролик","n"],
-      ["lion","лев","n"],["tiger","тигр","n"],["elephant","слон","n"],["bear","ведмідь","n"],["monkey","мавпа","n"]
+      ["dog","собака","n","A1"],["cat","кіт","n","A1"],["bird","птах","n","A1"],["horse","кінь","n","A1"],["cow","корова","n","A1"],
+      ["pig","свиня","n","A1"],["sheep","вівця","n","A2"],["fish","риба","n","A1"],["mouse","миша","n","A1"],["rabbit","кролик","n","A2"],
+      ["lion","лев","n","A2"],["tiger","тигр","n","A2"],["elephant","слон","n","A2"],["bear","ведмідь","n","A2"],["monkey","мавпа","n","A2"],
+      ["duck","качка","n","A2"],["frog","жаба","n","A2"],["snake","змія","n","A2"],["fox","лисиця","n","B1"],["wolf","вовк","n","B1"],
+      ["deer","олень","n","B1"],["goat","коза","n","B1"]
     ]},
     {slug:"weather", label:"Погода", items:[
-      ["sun","сонце","n"],["rain","дощ","n"],["snow","сніг","n"],["wind","вітер","n"],["cloud","хмара","n"],
-      ["storm","гроза/буря","n"],["hot","спекотно","adj"],["cold","холодно","adj"],["warm","тепло","adj"],["cool","прохолодно","adj"],
-      ["sunny","сонячно","adj"],["rainy","дощовий","adj"],["cloudy","хмарно","adj"],["weather","погода","n"],["temperature","температура","n"]
+      ["sun","сонце","n","A1"],["rain","дощ","n","A1"],["snow","сніг","n","A1"],["wind","вітер","n","A1"],["cloud","хмара","n","A2"],
+      ["storm","гроза/буря","n","A2"],["hot","спекотно","adj","A1"],["cold","холодно","adj","A1"],["warm","тепло","adj","A1"],["cool","прохолодно","adj","A2"],
+      ["sunny","сонячно","adj","A1"],["rainy","дощовий","adj","A2"],["cloudy","хмарно","adj","A2"],["weather","погода","n","A1"],["temperature","температура","n","A2"],
+      ["foggy","туманно","adj","B1"],["icy","крижаний","adj","B1"],["thunder","грім","n","B1"],["lightning","блискавка","n","B1"],["humid","вологий (про повітря)","adj","B1"]
     ]},
     {slug:"calendar", label:"Дні, місяці, пори року", items:[
-      ["Monday","понеділок","n"],["Tuesday","вівторок","n"],["Wednesday","середа","n"],["Thursday","четвер","n"],["Friday","п'ятниця","n"],
-      ["Saturday","субота","n"],["Sunday","неділя","n"],["January","січень","n"],["February","лютий","n"],["March","березень","n"],
-      ["April","квітень","n"],["May","травень","n"],["June","червень","n"],["July","липень","n"],["August","серпень","n"],
-      ["September","вересень","n"],["October","жовтень","n"],["November","листопад","n"],["December","грудень","n"],
-      ["spring","весна","n"],["summer","літо","n"],["autumn","осінь","n"],["winter","зима","n"],["today","сьогодні","other"],["tomorrow","завтра","other"],["yesterday","вчора","other"]
+      ["Monday","понеділок","n","A1"],["Tuesday","вівторок","n","A1"],["Wednesday","середа","n","A1"],["Thursday","четвер","n","A1"],["Friday","п'ятниця","n","A1"],
+      ["Saturday","субота","n","A1"],["Sunday","неділя","n","A1"],["January","січень","n","A1"],["February","лютий","n","A1"],["March","березень","n","A1"],
+      ["April","квітень","n","A1"],["May","травень","n","A1"],["June","червень","n","A1"],["July","липень","n","A1"],["August","серпень","n","A1"],
+      ["September","вересень","n","A1"],["October","жовтень","n","A1"],["November","листопад","n","A1"],["December","грудень","n","A1"],
+      ["spring","весна","n","A1"],["summer","літо","n","A1"],["autumn","осінь","n","A1"],["winter","зима","n","A1"],["today","сьогодні","other","A1"],["tomorrow","завтра","other","A1"],["yesterday","вчора","other","A1"]
     ]},
     {slug:"jobs", label:"Професії", items:[
-      ["teacher","вчитель","n"],["doctor","лікар","n"],["nurse","медсестра","n"],["engineer","інженер","n"],["driver","водій","n"],
-      ["waiter","офіціант","n"],["cook","кухар","n"],["police officer","поліцейський","n"],["farmer","фермер","n"],["shop assistant","продавець","n"],
-      ["student","студент","n"],["worker","робітник","n"],["manager","менеджер","n"],["builder","будівельник","n"],["writer","письменник","n"]
+      ["teacher","вчитель","n","A1"],["doctor","лікар","n","A1"],["nurse","медсестра","n","A1"],["engineer","інженер","n","A2"],["driver","водій","n","A1"],
+      ["waiter","офіціант","n","A1"],["cook","кухар","n","A1"],["police officer","поліцейський","n","A2"],["farmer","фермер","n","A2"],["shop assistant","продавець","n","A2"],
+      ["student","студент","n","A1"],["worker","робітник","n","A2"],["manager","менеджер","n","A2"],["builder","будівельник","n","A2"],["writer","письменник","n","A2"],
+      ["dentist","стоматолог","n","A2"],["pilot","пілот","n","A2"],["lawyer","юрист","n","B1"],["artist","художник","n","A2"],
+      ["journalist","журналіст","n","B1"],["scientist","науковець","n","B1"],["electrician","електрик","n","B1"],["hairdresser","перукар","n","A2"]
     ]},
     {slug:"school", label:"Школа", items:[
-      ["school","школа","n"],["teacher","вчитель","n"],["student","учень/студент","n"],["lesson","урок","n"],["book","книга","n"],
-      ["pen","ручка","n"],["pencil","олівець","n"],["notebook","зошит","n"],["desk","парта","n"],["homework","домашнє завдання","n"],
-      ["exam","іспит","n"],["question","питання","n"],["answer","відповідь","n"],["class","клас","n"],["subject","предмет","n"]
+      ["school","школа","n","A1"],["teacher","вчитель","n","A1"],["student","учень/студент","n","A1"],["lesson","урок","n","A1"],["book","книга","n","A1"],
+      ["pen","ручка","n","A1"],["pencil","олівець","n","A1"],["notebook","зошит","n","A1"],["desk","парта","n","A2"],["homework","домашнє завдання","n","A1"],
+      ["exam","іспит","n","A2"],["question","питання","n","A1"],["answer","відповідь","n","A1"],["class","клас","n","A1"],["subject","предмет","n","A2"],
+      ["eraser","гумка","n","A2"],["ruler","лінійка","n","A2"],["blackboard","дошка","n","A2"],["mark","оцінка","n","B1"],
+      ["timetable","розклад","n","B1"],["library","бібліотека","n","A2"]
     ]},
     {slug:"city", label:"Місто та подорожі", items:[
-      ["city","місто","n"],["street","вулиця","n"],["shop","магазин","n"],["market","ринок","n"],["park","парк","n"],
-      ["station","станція/вокзал","n"],["airport","аеропорт","n"],["hotel","готель","n"],["bank","банк","n"],["hospital","лікарня","n"],
-      ["car","автомобіль","n"],["bus","автобус","n"],["train","потяг","n"],["plane","літак","n"],["ticket","квиток","n"],
-      ["map","карта","n"],["journey","подорож","n"],["luggage","багаж","n"],["passport","паспорт","n"],["road","дорога","n"]
+      ["city","місто","n","A1"],["street","вулиця","n","A1"],["shop","магазин","n","A1"],["market","ринок","n","A2"],["park","парк","n","A1"],
+      ["station","станція/вокзал","n","A2"],["airport","аеропорт","n","A2"],["hotel","готель","n","A1"],["bank","банк","n","A2"],["hospital","лікарня","n","A2"],
+      ["car","автомобіль","n","A1"],["bus","автобус","n","A1"],["train","потяг","n","A1"],["plane","літак","n","A1"],["ticket","квиток","n","A2"],
+      ["map","карта","n","A2"],["journey","подорож","n","A2"],["luggage","багаж","n","B1"],["passport","паспорт","n","A2"],["road","дорога","n","A2"],
+      ["bridge","міст","n","A2"],["corner","ріг (вулиці)","n","B1"],["square","площа","n","A2"],["taxi","таксі","n","A1"],
+      ["underground","метро","n","A2"],["pavement","тротуар","n","B1"]
     ]},
     {slug:"verbs", label:"Дієслова", items:[
-      ["to be","бути","v"],["to have","мати","v"],["to do","робити","v"],["to go","йти/їхати","v"],["to come","приходити","v"],
-      ["to see","бачити","v"],["to know","знати","v"],["to think","думати","v"],["to want","хотіти","v"],["to like","подобатися","v"],
-      ["to make","робити/створювати","v"],["to say","казати","v"],["to speak","говорити","v"],["to read","читати","v"],["to write","писати","v"],
-      ["to eat","їсти","v"],["to drink","пити","v"],["to sleep","спати","v"],["to work","працювати","v"],["to play","грати","v"],
-      ["to buy","купувати","v"],["to live","жити","v"],["to give","давати","v"],["to take","брати","v"],["to help","допомагати","v"]
+      ["to be","бути","v","A1"],["to have","мати","v","A1"],["to do","робити","v","A1"],["to go","йти/їхати","v","A1"],["to come","приходити","v","A1"],
+      ["to see","бачити","v","A1"],["to know","знати","v","A1"],["to think","думати","v","A1"],["to want","хотіти","v","A1"],["to like","подобатися","v","A1"],
+      ["to make","робити/створювати","v","A1"],["to say","казати","v","A1"],["to speak","говорити","v","A1"],["to read","читати","v","A1"],["to write","писати","v","A1"],
+      ["to eat","їсти","v","A1"],["to drink","пити","v","A1"],["to sleep","спати","v","A1"],["to work","працювати","v","A1"],["to play","грати","v","A1"],
+      ["to buy","купувати","v","A1"],["to live","жити","v","A1"],["to give","давати","v","A1"],["to take","брати","v","A1"],["to help","допомагати","v","A1"],
+      ["to listen","слухати","v","A1"],["to watch","дивитися","v","A1"],["to look","дивитися/виглядати","v","A1"],["to find","знаходити","v","A2"],["to lose","губити","v","A2"],
+      ["to open","відчиняти","v","A1"],["to close","зачиняти","v","A1"],["to start","починати","v","A1"],["to finish","закінчувати","v","A1"],["to stop","зупиняти(ся)","v","A2"],
+      ["to wait","чекати","v","A1"],["to ask","питати","v","A1"],["to answer","відповідати","v","A1"],["to understand","розуміти","v","A2"],["to remember","пам'ятати","v","A2"],
+      ["to forget","забувати","v","A2"],["to learn","вчитися","v","A1"],["to teach","навчати","v","A2"],["to travel","подорожувати","v","A2"],["to walk","гуляти/ходити","v","A1"],
+      ["to run","бігти","v","A1"],["to swim","плавати","v","A1"],["to drive","керувати авто","v","A2"],["to fly","летіти","v","A2"],["to cook","готувати їжу","v","A1"],
+      ["to clean","прибирати","v","A1"],["to wash","мити/прати","v","A1"],["to wear","носити (одяг)","v","A2"],["to meet","зустрічати","v","A1"],["to visit","відвідувати","v","A2"],
+      ["to call","телефонувати","v","A1"],["to send","надсилати","v","A2"],["to receive","отримувати","v","A2"],["to pay","платити","v","A2"],["to cost","коштувати","v","A2"],
+      ["to need","потребувати","v","A1"],["to use","використовувати","v","A2"],["to try","намагатися","v","A2"],["to feel","почуватися","v","A2"],["to hope","сподіватися","v","B1"],
+      ["to believe","вірити","v","B1"],["to decide","вирішувати","v","B1"],["to change","змінювати(ся)","v","A2"],["to move","переїжджати/рухатися","v","A2"],["to stay","залишатися","v","A2"],
+      ["to leave","залишати/від'їжджати","v","A2"],["to arrive","прибувати","v","A2"],["to carry","нести","v","A2"],["to bring","приносити","v","A2"],["to show","показувати","v","A1"],
+      ["to tell","розповідати","v","A1"],["to smile","посміхатися","v","A2"],["to laugh","сміятися","v","A2"],["to cry","плакати","v","A2"],["to sing","співати","v","A1"],
+      ["to dance","танцювати","v","A1"],["to draw","малювати","v","A1"],["to build","будувати","v","A2"],["to grow","рости/вирощувати","v","B1"],["to fall","падати","v","A2"],
+      ["to break","ламати","v","A2"],["to fix","ремонтувати","v","B1"],["to turn on","вмикати","v","A2"],["to turn off","вимикати","v","A2"]
     ]},
     {slug:"adjectives", label:"Прикметники", items:[
-      ["big","великий","adj"],["small","маленький","adj"],["good","хороший","adj"],["bad","поганий","adj"],["new","новий","adj"],
-      ["old","старий","adj"],["happy","щасливий","adj"],["sad","сумний","adj"],["easy","легкий","adj"],["difficult","складний","adj"],
-      ["fast","швидкий","adj"],["slow","повільний","adj"],["beautiful","гарний","adj"],["strong","сильний","adj"],["cheap","дешевий","adj"],
-      ["expensive","дорогий","adj"],["clean","чистий","adj"],["dirty","брудний","adj"],["tall","високий","adj"],["short","низький/короткий","adj"]
+      ["big","великий","adj","A1"],["small","маленький","adj","A1"],["good","хороший","adj","A1"],["bad","поганий","adj","A1"],["new","новий","adj","A1"],
+      ["old","старий","adj","A1"],["happy","щасливий","adj","A1"],["sad","сумний","adj","A1"],["easy","легкий","adj","A1"],["difficult","складний","adj","A2"],
+      ["fast","швидкий","adj","A1"],["slow","повільний","adj","A1"],["beautiful","гарний","adj","A1"],["strong","сильний","adj","A2"],["cheap","дешевий","adj","A2"],
+      ["expensive","дорогий","adj","A2"],["clean","чистий","adj","A1"],["dirty","брудний","adj","A2"],["tall","високий","adj","A1"],["short","низький/короткий","adj","A1"],
+      ["young","молодий","adj","A1"],["funny","смішний","adj","A2"],["serious","серйозний","adj","A2"],["quiet","тихий","adj","A2"],["noisy","гучний","adj","A2"],
+      ["friendly","дружній","adj","A2"],["polite","ввічливий","adj","A2"],["rude","грубий","adj","B1"],["kind","добрий","adj","A2"],["angry","злий/сердитий","adj","A2"],
+      ["tired","втомлений","adj","A1"],["bored","знуджений","adj","A2"],["excited","схвильований (радісно)","adj","A2"],["nervous","нервовий","adj","B1"],["afraid","наляканий","adj","A2"],
+      ["proud","гордий","adj","B1"],["famous","відомий","adj","A2"],["popular","популярний","adj","A2"],["modern","сучасний","adj","A2"],["traditional","традиційний","adj","B1"],
+      ["comfortable","зручний","adj","A2"],["dangerous","небезпечний","adj","A2"],["safe","безпечний","adj","A2"],["healthy","здоровий","adj","A2"],
+      ["wide","широкий","adj","A2"],["narrow","вузький","adj","B1"],["heavy","важкий","adj","A2"],["deep","глибокий","adj","B1"],["shallow","мілкий","adj","B1"],
+      ["full","повний","adj","A1"],["empty","порожній","adj","A2"],["wet","мокрий","adj","A2"],["dry","сухий","adj","A2"],["loud","гучний","adj","A2"],
+      ["smart","розумний","adj","A2"],["lazy","лінивий","adj","A2"],["brave","хоробрий","adj","B1"],["honest","чесний","adj","B1"],["generous","щедрий","adj","B1"],
+      ["curious","допитливий","adj","B1"],["confident","впевнений (у собі)","adj","B1"]
     ]},
     {slug:"misc", label:"Різне", items:[
-      ["hello","привіт","other"],["goodbye","до побачення","other"],["please","будь ласка","other"],["thank you","дякую","other"],["sorry","вибачте","other"],
-      ["yes","так","other"],["no","ні","other"],["maybe","можливо","other"],["today","сьогодні","other"],["now","зараз","other"],
-      ["later","пізніше","other"],["always","завжди","other"],["sometimes","іноді","other"],["never","ніколи","other"],["often","часто","other"],
-      ["here","тут","other"],["there","там","other"],["everywhere","всюди","other"],["something","щось","other"],["nothing","нічого","other"],
-      ["someone","хтось","other"],["everyone","кожен","other"],["name","ім'я","n"],["age","вік","n"],["address","адреса","n"],
-      ["phone","телефон","n"],["computer","комп'ютер","n"],["internet","інтернет","n"],["letter","лист","n"],["message","повідомлення","n"],
-      ["picture","малюнок/фото","n"],["music","музика","n"],["sport","спорт","n"],["game","гра","n"],["holiday","свято/відпустка","n"],
-      ["birthday","день народження","n"],["party","вечірка","n"],["gift","подарунок","n"],["money","гроші","n"],["price","ціна","n"],
-      ["problem","проблема","n"],["idea","ідея","n"],["reason","причина","n"],["chance","шанс","n"],["choice","вибір","n"],
-      ["together","разом","other"],["alone","сам/наодинці","other"],["free","вільний","adj"],["busy","зайнятий","adj"],["ready","готовий","adj"],
-      ["important","важливий","adj"],["interesting","цікавий","adj"],["boring","нудний","adj"],["different","різний","adj"],["same","такий самий","adj"],
-      ["true","правдивий","adj"],["wrong","неправильний","adj"],["early","рано","other"],["late","пізно","other"],["still","все ще","other"],
-      ["already","вже","other"],["again","знову","other"],["because","тому що","other"],["but","але","other"],
-      ["and","і","other"],["or","або","other"],["also","також","other"],["very","дуже","other"],["really","справді","other"]
+      ["hello","привіт","other","A1"],["goodbye","до побачення","other","A1"],["please","будь ласка","other","A1"],["thank you","дякую","other","A1"],["sorry","вибачте","other","A1"],
+      ["yes","так","other","A1"],["no","ні","other","A1"],["maybe","можливо","other","A2"],["today","сьогодні","other","A1"],["now","зараз","other","A1"],
+      ["later","пізніше","other","A2"],["always","завжди","other","A1"],["sometimes","іноді","other","A1"],["never","ніколи","other","A1"],["often","часто","other","A1"],
+      ["here","тут","other","A1"],["there","там","other","A1"],["everywhere","всюди","other","A2"],["something","щось","other","A1"],["nothing","нічого","other","A1"],
+      ["someone","хтось","other","A1"],["everyone","кожен","other","A1"],["name","ім'я","n","A1"],["age","вік","n","A1"],["address","адреса","n","A2"],
+      ["phone","телефон","n","A1"],["computer","комп'ютер","n","A1"],["internet","інтернет","n","A1"],["letter","лист","n","A2"],["message","повідомлення","n","A2"],
+      ["picture","малюнок/фото","n","A1"],["music","музика","n","A1"],["sport","спорт","n","A1"],["game","гра","n","A1"],["holiday","свято/відпустка","n","A2"],
+      ["birthday","день народження","n","A1"],["party","вечірка","n","A1"],["gift","подарунок","n","A2"],["money","гроші","n","A1"],["price","ціна","n","A2"],
+      ["problem","проблема","n","A2"],["idea","ідея","n","A2"],["reason","причина","n","B1"],["chance","шанс","n","B1"],["choice","вибір","n","B1"],
+      ["together","разом","other","A1"],["alone","сам/наодинці","other","A2"],["free","вільний","adj","A2"],["busy","зайнятий","adj","A2"],["ready","готовий","adj","A2"],
+      ["important","важливий","adj","A2"],["interesting","цікавий","adj","A1"],["boring","нудний","adj","A2"],["different","різний","adj","A2"],["same","такий самий","adj","A2"],
+      ["true","правдивий","adj","A2"],["wrong","неправильний","adj","A2"],["early","рано","other","A1"],["late","пізно","other","A1"],["still","все ще","other","B1"],
+      ["already","вже","other","A2"],["again","знову","other","A1"],["because","тому що","other","A1"],["but","але","other","A1"],
+      ["and","і","other","A1"],["or","або","other","A1"],["also","також","other","A2"],["very","дуже","other","A1"],["really","справді","other","A2"]
     ]}
   ];
 
@@ -545,6 +593,14 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     return a;
   }
 
+  function levelBadge(it){
+    const level = it[3] || "A2";
+    const badge = document.createElement("span");
+    badge.className = "eq-level-badge lvl-" + level.toLowerCase();
+    badge.textContent = level;
+    return badge;
+  }
+
   function speakEnglish(text){
     if(!("speechSynthesis" in window)) return;
     const u = new SpeechSynthesisUtterance(text);
@@ -724,11 +780,14 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     const list = document.createElement("div"); list.className = "eq-study-list";
     state.blockItems.forEach(it=>{
       const row = document.createElement("div"); row.className = "eq-study-item";
+      const frontRow = document.createElement("span"); frontRow.className = "eq-study-front-row";
       const front = document.createElement("span"); front.className = "eq-study-front"; front.textContent = enFirst ? it[0] : it[1];
+      frontRow.appendChild(front);
+      frontRow.appendChild(levelBadge(it));
       const back = document.createElement("span"); back.className = "eq-study-back"; back.textContent = enFirst ? it[1] : it[0];
       const speakBtn = document.createElement("button"); speakBtn.className = "eq-study-speak"; speakBtn.textContent = "🔊"; speakBtn.title = "Прослухати";
       speakBtn.onclick = ()=> speakEnglish(it[0]);
-      row.appendChild(front); row.appendChild(back); row.appendChild(speakBtn);
+      row.appendChild(frontRow); row.appendChild(back); row.appendChild(speakBtn);
       list.appendChild(row);
     });
     wrap.appendChild(list);
@@ -904,7 +963,10 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     const list = document.createElement("div"); list.className = "eq-study-list";
     filtered.slice(0, 200).forEach(it=>{
       const row = document.createElement("div"); row.className = "eq-study-item eq-dict-item";
+      const frontRow = document.createElement("span"); frontRow.className = "eq-study-front-row";
       const front = document.createElement("span"); front.className = "eq-study-front"; front.textContent = it[0];
+      frontRow.appendChild(front);
+      frontRow.appendChild(levelBadge(it));
       const back = document.createElement("span"); back.className = "eq-study-back"; back.textContent = it[1];
       const actions = document.createElement("span"); actions.className = "eq-dict-actions";
       const starBtn = document.createElement("button"); starBtn.className = "eq-star" + (isFavorite(it) ? " active" : ""); starBtn.textContent = isFavorite(it) ? "★" : "☆";
@@ -912,7 +974,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       const speakBtn = document.createElement("button"); speakBtn.className = "eq-study-speak"; speakBtn.textContent = "🔊"; speakBtn.title = "Прослухати";
       speakBtn.onclick = ()=> speakEnglish(it[0]);
       actions.appendChild(starBtn); actions.appendChild(speakBtn);
-      row.appendChild(front); row.appendChild(back); row.appendChild(actions);
+      row.appendChild(frontRow); row.appendChild(back); row.appendChild(actions);
       list.appendChild(row);
     });
     wrap.appendChild(list);
