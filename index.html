@@ -567,6 +567,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     view: "picker", // picker | posPicker | study | quiz | summary | theoryList | theoryArticle | dictionary | readingList | readingText | progress
     returnView: "picker",
     dictQuery: "",
+    dictLevel: "all",
     readingIndex: 0,
     showTranslation: false,
     topic: null,
@@ -954,8 +955,17 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     search.oninput = (e)=>{ state.dictQuery = e.target.value; render(); const el = document.getElementById("eq-dict-search"); if(el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } };
     wrap.appendChild(search);
 
+    const levelRow = document.createElement("div"); levelRow.className = "eq-dirtoggle";
+    [["all","Усі"],["A1","A1"],["A2","A2"],["B1","B1"]].forEach(([val,label])=>{
+      const btn = document.createElement("button"); btn.className = "eq-dirbtn" + (state.dictLevel===val?" active":""); btn.textContent = label;
+      btn.onclick = ()=>{ state.dictLevel = val; render(); };
+      levelRow.appendChild(btn);
+    });
+    wrap.appendChild(levelRow);
+
     const q = state.dictQuery.trim().toLowerCase();
-    const filtered = q ? DICTIONARY.filter(it=> it[0].toLowerCase().indexOf(q)!==-1 || it[1].toLowerCase().indexOf(q)!==-1) : DICTIONARY;
+    const byQuery = q ? DICTIONARY.filter(it=> it[0].toLowerCase().indexOf(q)!==-1 || it[1].toLowerCase().indexOf(q)!==-1) : DICTIONARY;
+    const filtered = state.dictLevel === "all" ? byQuery : byQuery.filter(it=> (it[3]||"A2") === state.dictLevel);
 
     const count = document.createElement("p"); count.className = "eq-dict-count"; count.textContent = filtered.length + " із " + DICTIONARY.length + " слів";
     wrap.appendChild(count);
