@@ -12,7 +12,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 *{box-sizing:border-box;}
 .eq-root{ font-family:"Iowan Old Style","Palatino Linotype",Georgia,"Times New Roman",serif; color:var(--ink); background:var(--paper); padding:64px 18px 60px; max-width:720px; min-height:100vh; margin:0 auto; position:relative; transition:background-color .2s ease, color .2s ease; }
 .eq-root[data-theme="dark"]{ --ink:#E7E1D3; --paper:#141A24; --card:#1E2734; --card-alt:#242F3E; --line:#2C3849; --navy:#6C93C4; --navy-solid:#3E6690; --gold:#E3C567; --good:#5FBE82; --good-bg:#1D3327; --bad:#E2827E; --bad-bg:#3A2323; --muted:#93A1B5; --purple:#A78BD1; }
-.eq-top{ position:absolute; top:16px; right:18px; display:flex; justify-content:flex-end; }
+.eq-top{ position:absolute; top:16px; right:18px; display:flex; justify-content:flex-end; gap:8px; }
 .eq-icon-btn{ width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:var(--card); color:var(--ink); font-size:15px; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; text-decoration:none; }
 .eq-icon-btn:hover{ border-color:var(--gold); }
 .eq-kicker{ font-family:"Helvetica Neue",Arial,sans-serif; font-size:12.5px; letter-spacing:.04em; color:var(--muted); margin:0 0 4px; }
@@ -1602,6 +1602,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
   // ---------- state ----------
   const state = {
     theme: localStorage.getItem("eq-theme") || "light",
+    voiceGender: localStorage.getItem("eq-voice-gender") || "female",
     view: "picker", // picker | posPicker | study | quiz | summary | theoryList | theoryArticle | dictionary | readingList | readingText | progress
     returnView: "picker",
     dictQuery: "",
@@ -1663,7 +1664,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       v.localService ? 1 : 0;
     return en.slice().sort((a,b)=> byQuality(b) - byQuality(a))[0];
   }
-  function speakEnglish(text){
+  function speakBrowser(text){
     if(!("speechSynthesis" in window)) return;
     const u = new SpeechSynthesisUtterance(text);
     const voice = pickEnglishVoice();
@@ -1673,6 +1674,23 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     u.pitch = 1;
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(u);
+  }
+
+  // Slug must match the Python generator's slugify() exactly: strip
+  // diacritics, lowercase, collapse anything non a-z0-9 into "_".
+  function audioSlug(text){
+    const stripped = text.normalize("NFKD").replace(/[̀-ͯ]/g, "");
+    const slug = stripped.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+    return slug || "word";
+  }
+  function speakEnglish(text){
+    if(state.voiceGender === "male"){
+      const audio = new Audio("audio/" + audioSlug(text) + ".mp3");
+      audio.addEventListener("error", ()=> speakBrowser(text));
+      audio.play().catch(()=> speakBrowser(text));
+      return;
+    }
+    speakBrowser(text);
   }
 
   const BLOCK_SIZE = 15;
@@ -1746,9 +1764,13 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     root.appendChild(wrap);
 
     const top = document.createElement("div"); top.className = "eq-top";
+    const voiceBtn = document.createElement("button"); voiceBtn.className = "eq-icon-btn";
+    voiceBtn.title = state.voiceGender === "male" ? "Голос: чоловічий (натисніть для жіночого)" : "Голос: жіночий (натисніть для чоловічого)";
+    voiceBtn.textContent = state.voiceGender === "male" ? "👨" : "👩";
+    voiceBtn.onclick = ()=>{ state.voiceGender = state.voiceGender === "male" ? "female" : "male"; localStorage.setItem("eq-voice-gender", state.voiceGender); render(); };
     const themeBtn = document.createElement("button"); themeBtn.className = "eq-icon-btn"; themeBtn.textContent = state.theme === "dark" ? "☀️" : "🌙";
     themeBtn.onclick = ()=>{ state.theme = state.theme === "dark" ? "light" : "dark"; localStorage.setItem("eq-theme", state.theme); render(); };
-    top.appendChild(themeBtn);
+    top.appendChild(voiceBtn); top.appendChild(themeBtn);
     wrap.appendChild(top);
 
     if(state.view === "picker") renderPicker(wrap);
