@@ -1460,7 +1460,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
   }
 
   const THEME_TOPICS = TOPICS.filter(t=> !t.grammar);
-  const GRAMMAR_BLOCKS = TOPICS.filter(t=> t.grammar);
+  const GRAMMAR_BLOCKS = TOPICS.filter(t=> t.grammar && t.slug !== "verbs" && t.slug !== "adjectives");
 
   function renderPicker(wrap){
     renderModeTabs(wrap);
