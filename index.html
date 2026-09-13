@@ -291,6 +291,11 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     return list;
   })();
 
+  const LEVEL_ORDER = {A1:0, A2:1, B1:2, B2:3};
+  function byLevel(a, b){
+    return (LEVEL_ORDER[a.level || "A2"] ?? 1) - (LEVEL_ORDER[b.level || "A2"] ?? 1);
+  }
+
   // ---------- reading texts ----------
   const READING = [
     {
@@ -434,6 +439,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       vocab:[["trip","поїздка"],["journey","подорож"],["beach","пляж"],["promenade","набережна"],["local","місцевий"],["relaxing","розслаблюючий"],["to plan","планувати"]]
     }
   ];
+  READING.sort(byLevel);
 
   // ---------- progress: favorites, mistakes, streak (localStorage) ----------
   const PROGRESS_KEY = "eq-progress-v1";
@@ -635,6 +641,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       </ul>
     `}
   ];
+  THEORY.sort(byLevel);
 
   // ---------- state ----------
   const state = {
