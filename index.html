@@ -79,6 +79,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 .eq-dict-count{ font-family:"Helvetica Neue",Arial,sans-serif; font-size:12.5px; color:var(--muted); margin:0 0 16px; }
 .eq-dict-item{ grid-template-columns:1fr 1fr auto; }
 .eq-dict-actions{ display:flex; align-items:center; gap:10px; }
+.eq-pos-tag{ font-family:"Helvetica Neue",Arial,sans-serif; font-size:11px; color:var(--muted); border:1px solid var(--line); border-radius:2px; padding:1px 6px; }
 .eq-reading-ua{ color:var(--muted); font-style:italic; margin-top:-8px !important; }
 .eq-streak-box{ display:flex; flex-direction:column; align-items:center; margin:10px 0 4px; }
 .eq-cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:26px; font-family:"Helvetica Neue",Arial,sans-serif; }
@@ -1227,6 +1228,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     dictQuery: "",
     dictLevel: "all",
     posLevel: "all",
+    posQuery: "",
     readingIndex: 0,
     showTranslation: false,
     topic: null,
@@ -1495,6 +1497,8 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     renderTopicGrid(wrap, THEME_TOPICS, "picker");
   }
 
+  const POS_LABELS = {n:"іменник", v:"дієслово", adj:"прикметник", other:"інше"};
+
   function renderPosPicker(wrap){
     renderModeTabs(wrap);
     const kicker = document.createElement("p"); kicker.className = "eq-kicker"; kicker.textContent = "Англійська · рівень A2–B1";
@@ -1502,9 +1506,42 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     wrap.appendChild(kicker); wrap.appendChild(title);
     renderDirToggle(wrap);
 
+    const search = document.createElement("input"); search.type = "text"; search.className = "eq-search";
+    search.placeholder = "Пошук слова англійською або українською…";
+    search.value = state.posQuery;
+    search.id = "eq-pos-search";
+    search.oninput = (e)=>{ state.posQuery = e.target.value; render(); const el = document.getElementById("eq-pos-search"); if(el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } };
+    wrap.appendChild(search);
+
     const levelLabel = document.createElement("p"); levelLabel.className = "eq-missed-title"; levelLabel.textContent = "Рівень слів";
     wrap.appendChild(levelLabel);
     renderLevelToggle(wrap, state.posLevel, (val)=>{ state.posLevel = val; render(); });
+
+    const q = state.posQuery.trim().toLowerCase();
+    if(q){
+      const byQuery = DICTIONARY.filter(it=> it[0].toLowerCase().indexOf(q)!==-1 || it[1].toLowerCase().indexOf(q)!==-1);
+      const results = state.posLevel === "all" ? byQuery : byQuery.filter(it=> (it[3]||"A2") === state.posLevel);
+      const count = document.createElement("p"); count.className = "eq-dict-count"; count.style.marginTop = "20px"; count.textContent = results.length + " слів знайдено";
+      wrap.appendChild(count);
+
+      const list = document.createElement("div"); list.className = "eq-study-list";
+      results.slice(0, 200).forEach(it=>{
+        const row = document.createElement("div"); row.className = "eq-study-item eq-dict-item";
+        const frontRow = document.createElement("span"); frontRow.className = "eq-study-front-row";
+        const front = document.createElement("span"); front.className = "eq-study-front"; front.textContent = it[0];
+        frontRow.appendChild(front);
+        const posTag = document.createElement("span"); posTag.className = "eq-pos-tag"; posTag.textContent = POS_LABELS[it[2]] || "";
+        frontRow.appendChild(posTag);
+        frontRow.appendChild(levelBadge(it));
+        const back = document.createElement("span"); back.className = "eq-study-back"; back.textContent = it[1];
+        const speakBtn = document.createElement("button"); speakBtn.className = "eq-study-speak"; speakBtn.textContent = "🔊"; speakBtn.title = "Прослухати";
+        speakBtn.onclick = ()=> speakEnglish(it[0]);
+        row.appendChild(frontRow); row.appendChild(back); row.appendChild(speakBtn);
+        list.appendChild(row);
+      });
+      wrap.appendChild(list);
+      return;
+    }
 
     const filteredPos = POS_TOPICS.map(t=> filterTopicByLevel(t, state.posLevel)).filter(t=> t.items.length > 0);
     const filteredBlocks = GRAMMAR_BLOCKS.map(t=> filterTopicByLevel(t, state.posLevel)).filter(t=> t.items.length > 0);
