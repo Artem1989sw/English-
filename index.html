@@ -1261,11 +1261,35 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
   }
   function levelBadge(it){ return makeLevelBadge(it[3] || "A2"); }
 
+  let cachedVoices = [];
+  function refreshVoices(){
+    if("speechSynthesis" in window) cachedVoices = window.speechSynthesis.getVoices();
+  }
+  if("speechSynthesis" in window){
+    refreshVoices();
+    window.speechSynthesis.onvoiceschanged = refreshVoices;
+  }
+  // Prefer a real native English voice over whatever the browser
+  // would otherwise default to (which can silently be a voice for a
+  // different language, reading English with the wrong phonetics).
+  function pickEnglishVoice(){
+    if(!cachedVoices.length) refreshVoices();
+    const en = cachedVoices.filter(v=> v.lang && v.lang.toLowerCase().startsWith("en"));
+    if(!en.length) return null;
+    const byQuality = (v)=>
+      /google us english|microsoft (aria|jenny|guy|zira|david)|samantha|daniel|natural/i.test(v.name) ? 3 :
+      v.lang.toLowerCase() === "en-us" ? 2 :
+      v.localService ? 1 : 0;
+    return en.slice().sort((a,b)=> byQuality(b) - byQuality(a))[0];
+  }
   function speakEnglish(text){
     if(!("speechSynthesis" in window)) return;
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = "en-US";
-    u.rate = 0.95;
+    const voice = pickEnglishVoice();
+    if(voice){ u.voice = voice; u.lang = voice.lang; }
+    else { u.lang = "en-US"; }
+    u.rate = 0.9;
+    u.pitch = 1;
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(u);
   }
