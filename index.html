@@ -689,6 +689,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 
     if(state.view === "picker") renderPicker(wrap);
     else if(state.view === "posPicker") renderPosPicker(wrap);
+    else if(state.view === "overview") renderOverview(wrap);
     else if(state.view === "study") renderStudy(wrap);
     else if(state.view === "quiz") renderQuiz(wrap);
     else if(state.view === "summary") renderSummary(wrap);
@@ -737,10 +738,51 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       const name = document.createElement("div"); name.className = "eq-tile-name"; name.textContent = topic.label;
       const count = document.createElement("div"); count.className = "eq-tile-count"; count.textContent = topic.items.length + " слів";
       tile.appendChild(name); tile.appendChild(count);
-      tile.onclick = ()=> startQuiz(topic, fromView);
+      tile.onclick = ()=> showOverview(topic, fromView);
       grid.appendChild(tile);
     });
     wrap.appendChild(grid);
+  }
+
+  function showOverview(topic, fromView){
+    state.topic = topic;
+    state.returnView = fromView || state.view;
+    state.view = "overview";
+    render();
+  }
+
+  function renderOverview(wrap){
+    const back = document.createElement("button"); back.className = "eq-back"; back.textContent = "← Назад до тем";
+    back.onclick = ()=>{ state.view = state.returnView; render(); };
+    wrap.appendChild(back);
+
+    const kicker = document.createElement("p"); kicker.className = "eq-kicker"; kicker.textContent = state.topic.label;
+    const title = document.createElement("h1"); title.className = "eq-title"; title.textContent = "Усі слова теми";
+    wrap.appendChild(kicker); wrap.appendChild(title);
+
+    renderDirToggle(wrap);
+
+    const enFirst = state.direction === "en-ua";
+    const list = document.createElement("div"); list.className = "eq-study-list";
+    state.topic.items.forEach(it=>{
+      const row = document.createElement("div"); row.className = "eq-study-item";
+      const frontRow = document.createElement("span"); frontRow.className = "eq-study-front-row";
+      const front = document.createElement("span"); front.className = "eq-study-front"; front.textContent = enFirst ? it[0] : it[1];
+      frontRow.appendChild(front);
+      frontRow.appendChild(levelBadge(it));
+      const back2 = document.createElement("span"); back2.className = "eq-study-back"; back2.textContent = enFirst ? it[1] : it[0];
+      const speakBtn = document.createElement("button"); speakBtn.className = "eq-study-speak"; speakBtn.textContent = "🔊"; speakBtn.title = "Прослухати";
+      speakBtn.onclick = ()=> speakEnglish(it[0]);
+      row.appendChild(frontRow); row.appendChild(back2); row.appendChild(speakBtn);
+      list.appendChild(row);
+    });
+    wrap.appendChild(list);
+
+    const btnrow = document.createElement("div"); btnrow.className = "eq-btnrow";
+    const start = document.createElement("button"); start.className = "eq-btn-primary"; start.textContent = "Почати тест →";
+    start.onclick = ()=> startQuiz(state.topic, state.returnView);
+    btnrow.appendChild(start);
+    wrap.appendChild(btnrow);
   }
 
   function renderPicker(wrap){
