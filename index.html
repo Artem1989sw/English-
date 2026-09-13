@@ -1683,11 +1683,19 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     const slug = stripped.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
     return slug || "word";
   }
+  let currentAudioEl = null;
+  function stopSpeech(){
+    if("speechSynthesis" in window) window.speechSynthesis.cancel();
+    if(currentAudioEl){ currentAudioEl.pause(); currentAudioEl.currentTime = 0; currentAudioEl = null; }
+  }
   function speakEnglish(text){
+    stopSpeech();
     if(state.voiceGender === "male"){
       const audio = new Audio("audio/" + audioSlug(text) + ".mp3");
-      audio.addEventListener("error", ()=> speakBrowser(text));
-      audio.play().catch(()=> speakBrowser(text));
+      currentAudioEl = audio;
+      audio.addEventListener("ended", ()=>{ if(currentAudioEl === audio) currentAudioEl = null; });
+      audio.addEventListener("error", ()=>{ if(currentAudioEl === audio) currentAudioEl = null; speakBrowser(text); });
+      audio.play().catch(()=>{ if(currentAudioEl === audio) currentAudioEl = null; speakBrowser(text); });
       return;
     }
     speakBrowser(text);
@@ -1764,13 +1772,17 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     root.appendChild(wrap);
 
     const top = document.createElement("div"); top.className = "eq-top";
+    const stopBtn = document.createElement("button"); stopBtn.className = "eq-icon-btn";
+    stopBtn.title = "Зупинити озвучення";
+    stopBtn.textContent = "⏹";
+    stopBtn.onclick = stopSpeech;
     const voiceBtn = document.createElement("button"); voiceBtn.className = "eq-icon-btn";
     voiceBtn.title = state.voiceGender === "male" ? "Голос: чоловічий (натисніть для жіночого)" : "Голос: жіночий (натисніть для чоловічого)";
     voiceBtn.textContent = state.voiceGender === "male" ? "👨" : "👩";
     voiceBtn.onclick = ()=>{ state.voiceGender = state.voiceGender === "male" ? "female" : "male"; localStorage.setItem("eq-voice-gender", state.voiceGender); render(); };
     const themeBtn = document.createElement("button"); themeBtn.className = "eq-icon-btn"; themeBtn.textContent = state.theme === "dark" ? "☀️" : "🌙";
     themeBtn.onclick = ()=>{ state.theme = state.theme === "dark" ? "light" : "dark"; localStorage.setItem("eq-theme", state.theme); render(); };
-    top.appendChild(voiceBtn); top.appendChild(themeBtn);
+    top.appendChild(stopBtn); top.appendChild(voiceBtn); top.appendChild(themeBtn);
     wrap.appendChild(top);
 
     if(state.view === "picker") renderPicker(wrap);
