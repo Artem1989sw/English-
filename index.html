@@ -1226,6 +1226,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     returnView: "picker",
     dictQuery: "",
     dictLevel: "all",
+    posLevel: "all",
     readingIndex: 0,
     showTranslation: false,
     topic: null,
@@ -1389,6 +1390,21 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     wrap.appendChild(dirRow);
   }
 
+  const LEVEL_FILTER_OPTIONS = [["all","Усі"],["A1","A1"],["A2","A2"],["B1","B1"],["B2","B2"],["C1","C1"]];
+  function renderLevelToggle(wrap, current, onSelect){
+    const row = document.createElement("div"); row.className = "eq-dirtoggle";
+    LEVEL_FILTER_OPTIONS.forEach(([val,label])=>{
+      const btn = document.createElement("button"); btn.className = "eq-dirbtn" + (current===val?" active":""); btn.textContent = label;
+      btn.onclick = ()=> onSelect(val);
+      row.appendChild(btn);
+    });
+    wrap.appendChild(row);
+  }
+  function filterTopicByLevel(topic, level){
+    if(level === "all") return topic;
+    return {slug: topic.slug, label: topic.label, grammar: topic.grammar, items: topic.items.filter(it=> (it[3]||"A2") === level)};
+  }
+
   function renderTopicGrid(wrap, topics, fromView){
     const grid = document.createElement("div"); grid.className = "eq-grid";
     topics.forEach(topic=>{
@@ -1462,13 +1478,22 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     wrap.appendChild(kicker); wrap.appendChild(title);
     renderDirToggle(wrap);
 
-    const generalLabel = document.createElement("p"); generalLabel.className = "eq-missed-title"; generalLabel.textContent = "Загальні категорії (усі слова разом)";
+    const levelLabel = document.createElement("p"); levelLabel.className = "eq-missed-title"; levelLabel.textContent = "Рівень слів";
+    wrap.appendChild(levelLabel);
+    renderLevelToggle(wrap, state.posLevel, (val)=>{ state.posLevel = val; render(); });
+
+    const filteredPos = POS_TOPICS.map(t=> filterTopicByLevel(t, state.posLevel)).filter(t=> t.items.length > 0);
+    const filteredBlocks = GRAMMAR_BLOCKS.map(t=> filterTopicByLevel(t, state.posLevel)).filter(t=> t.items.length > 0);
+
+    const generalLabel = document.createElement("p"); generalLabel.className = "eq-missed-title"; generalLabel.style.marginTop = "24px"; generalLabel.textContent = "Загальні категорії (усі слова разом)";
     wrap.appendChild(generalLabel);
-    renderTopicGrid(wrap, POS_TOPICS, "posPicker");
+    if(filteredPos.length) renderTopicGrid(wrap, filteredPos, "posPicker");
+    else { const empty = document.createElement("p"); empty.className = "eq-dict-count"; empty.textContent = "Немає слів цього рівня в цій категорії."; wrap.appendChild(empty); }
 
     const blocksLabel = document.createElement("p"); blocksLabel.className = "eq-missed-title"; blocksLabel.style.marginTop = "24px"; blocksLabel.textContent = "Окремі блоки";
     wrap.appendChild(blocksLabel);
-    renderTopicGrid(wrap, GRAMMAR_BLOCKS, "posPicker");
+    if(filteredBlocks.length) renderTopicGrid(wrap, filteredBlocks, "posPicker");
+    else { const empty = document.createElement("p"); empty.className = "eq-dict-count"; empty.textContent = "Немає слів цього рівня в цій категорії."; wrap.appendChild(empty); }
   }
 
   function blockLabel(){
@@ -1672,13 +1697,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     search.oninput = (e)=>{ state.dictQuery = e.target.value; render(); const el = document.getElementById("eq-dict-search"); if(el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } };
     wrap.appendChild(search);
 
-    const levelRow = document.createElement("div"); levelRow.className = "eq-dirtoggle";
-    [["all","Усі"],["A1","A1"],["A2","A2"],["B1","B1"],["B2","B2"],["C1","C1"]].forEach(([val,label])=>{
-      const btn = document.createElement("button"); btn.className = "eq-dirbtn" + (state.dictLevel===val?" active":""); btn.textContent = label;
-      btn.onclick = ()=>{ state.dictLevel = val; render(); };
-      levelRow.appendChild(btn);
-    });
-    wrap.appendChild(levelRow);
+    renderLevelToggle(wrap, state.dictLevel, (val)=>{ state.dictLevel = val; render(); });
 
     const q = state.dictQuery.trim().toLowerCase();
     const byQuery = q ? DICTIONARY.filter(it=> it[0].toLowerCase().indexOf(q)!==-1 || it[1].toLowerCase().indexOf(q)!==-1) : DICTIONARY;
