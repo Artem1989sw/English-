@@ -1664,6 +1664,9 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       v.localService ? 1 : 0;
     return en.slice().sort((a,b)=> byQuality(b) - byQuality(a))[0];
   }
+  // Kept alive on purpose: some Android Chrome builds silently drop the
+  // utterance if it's garbage-collected before speech finishes.
+  let currentUtterance = null;
   function speakBrowser(text){
     if(!("speechSynthesis" in window)) return;
     const u = new SpeechSynthesisUtterance(text);
@@ -1672,8 +1675,10 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     else { u.lang = "en-US"; }
     u.rate = 0.9;
     u.pitch = 1;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
+    currentUtterance = u;
+    // Android Chrome can silently drop speak() if it's called in the same
+    // tick as cancel() — a short delay avoids that race.
+    setTimeout(()=>{ window.speechSynthesis.speak(u); }, 60);
   }
 
   // Slug must match the Python generator's slugify() exactly: strip
@@ -1686,6 +1691,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
   let currentAudioEl = null;
   function stopSpeech(){
     if("speechSynthesis" in window) window.speechSynthesis.cancel();
+    currentUtterance = null;
     if(currentAudioEl){ currentAudioEl.pause(); currentAudioEl.currentTime = 0; currentAudioEl = null; }
   }
   function speakEnglish(text){
