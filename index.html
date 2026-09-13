@@ -93,6 +93,11 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 .eq-level-badge.lvl-b1{ background:var(--navy-solid); }
 .eq-level-badge.lvl-b2{ background:var(--bad); }
 .eq-study-front-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.eq-theory-list-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.eq-title-row{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:22px; }
+.eq-title-row .eq-title{ border-bottom:none; margin-bottom:0; padding-bottom:0; flex:1; }
+.eq-reading-list-item{ font-family:"Helvetica Neue",Arial,sans-serif; display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; text-align:left; background:var(--card); border:1px solid var(--line); border-left:4px solid var(--gold); padding:14px 16px; margin-bottom:10px; cursor:pointer; font-size:15px; color:var(--ink); }
+.eq-reading-list-item:hover{ border-left-color:var(--navy); }
 </style>
 </head>
 <body>
@@ -289,7 +294,21 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
   // ---------- reading texts ----------
   const READING = [
     {
-      title:"My Family", titleUa:"Моя сім'я",
+      title:"My Name Is Anna", titleUa:"Мене звати Анна", level:"A1",
+      en:["Hello! My name is Anna. I am from Ukraine.",
+          "I am twenty-five years old.",
+          "I have got a mother, a father and a brother.",
+          "I live in a flat in Kyiv.",
+          "I like my family very much."],
+      ua:["Привіт! Мене звати Анна. Я з України.",
+          "Мені двадцять п'ять років.",
+          "У мене є мама, тато і брат.",
+          "Я живу в квартирі в Києві.",
+          "Я дуже люблю свою сім'ю."],
+      vocab:[["name","ім'я"],["mother","мама"],["father","тато"],["brother","брат"],["flat","квартира"],["family","сім'я"]]
+    },
+    {
+      title:"My Family", titleUa:"Моя сім'я", level:"A2",
       en:["Hello! My name is Anna. I am twenty-five years old and I live in Kyiv.",
           "I have a small family: my mother, my father and my brother.",
           "My mother is a teacher and my father is an engineer. My brother is a student.",
@@ -303,7 +322,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       vocab:[["family","сім'я"],["mother","мама"],["father","тато"],["brother","брат"],["teacher","вчитель"],["engineer","інженер"],["student","студент"],["together","разом"]]
     },
     {
-      title:"My Daily Routine", titleUa:"Мій розпорядок дня",
+      title:"My Daily Routine", titleUa:"Мій розпорядок дня", level:"A2",
       en:["I usually get up at seven o'clock in the morning.",
           "First, I have breakfast and drink a cup of coffee.",
           "Then I go to work by bus. I work from nine to five.",
@@ -317,7 +336,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       vocab:[["morning","ранок"],["breakfast","сніданок"],["to work","працювати"],["evening","вечір"],["to cook","готувати"],["to watch","дивитися"]]
     },
     {
-      title:"The Weather Today", titleUa:"Погода сьогодні",
+      title:"The Weather Today", titleUa:"Погода сьогодні", level:"A1",
       en:["Today the weather is cold and windy.",
           "In the morning it was cloudy, and now it is raining.",
           "I think it will be sunny tomorrow.",
@@ -331,7 +350,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       vocab:[["cold","холодно"],["windy","вітряно"],["cloudy","хмарно"],["rain","дощ"],["sunny","сонячно"],["winter","зима"],["snow","сніг"]]
     },
     {
-      title:"At the Supermarket", titleUa:"У супермаркеті",
+      title:"At the Supermarket", titleUa:"У супермаркеті", level:"A2",
       en:["Yesterday I went to the supermarket to buy some food.",
           "I bought bread, cheese, milk, apples and a bit of meat.",
           "The bread was cheap, but the meat was quite expensive.",
@@ -345,7 +364,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       vocab:[["to buy","купувати"],["bread","хліб"],["cheese","сир"],["cheap","дешевий"],["expensive","дорогий"],["neighbour","сусід"],["to pay","платити"]]
     },
     {
-      title:"My Favourite Weekend", titleUa:"Мої улюблені вихідні",
+      title:"My Favourite Weekend", titleUa:"Мої улюблені вихідні", level:"A2",
       en:["On Saturday I usually meet my friends in the park.",
           "We walk, talk and sometimes play sport together.",
           "In the afternoon I like to read a book or watch a film.",
@@ -357,6 +376,62 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
           "У неділю ми з родиною часто ходимо на обід у ресторан.",
           "Гадаю, вихідні — найкращі дні тижня!"],
       vocab:[["friend","друг"],["park","парк"],["to play","грати"],["to read","читати"],["film","фільм"],["restaurant","ресторан"],["weekend","вихідні"]]
+    },
+    {
+      title:"At School", titleUa:"У школі", level:"A1",
+      en:["This is my school.",
+          "My classroom is big and light.",
+          "I have got a book, a pen and a notebook.",
+          "My teacher is very kind.",
+          "I like my school."],
+      ua:["Це моя школа.",
+          "Мій клас великий і світлий.",
+          "У мене є книга, ручка і зошит.",
+          "Моя вчителька дуже добра.",
+          "Мені подобається моя школа."],
+      vocab:[["school","школа"],["classroom","клас (кімната)"],["book","книга"],["pen","ручка"],["notebook","зошит"],["teacher","вчитель"],["kind","добрий"]]
+    },
+    {
+      title:"A Visit to the Doctor", titleUa:"Візит до лікаря", level:"A2",
+      en:["Yesterday I didn't feel very well, so I went to see a doctor.",
+          "I had a headache and a bit of a temperature.",
+          "The doctor asked me some questions and checked my throat.",
+          "She said it wasn't serious and gave me some medicine.",
+          "Today I feel much better."],
+      ua:["Учора я почувалася не дуже добре, тому пішла до лікаря.",
+          "У мене боліла голова і була невелика температура.",
+          "Лікарка поставила кілька запитань і оглянула горло.",
+          "Вона сказала, що це не серйозно, і виписала ліки.",
+          "Сьогодні я почуваюся набагато краще."],
+      vocab:[["doctor","лікар"],["headache","головний біль"],["temperature","температура"],["throat","горло"],["medicine","ліки"],["serious","серйозний"]]
+    },
+    {
+      title:"Public Transport in My City", titleUa:"Громадський транспорт у моєму місті", level:"B1",
+      en:["Public transport in my city is quite good and not very expensive.",
+          "There are buses, trams and an underground, so it is easy to get anywhere.",
+          "I usually take the bus to work because it stops near my house.",
+          "During rush hour the buses are often crowded, and sometimes they are late.",
+          "Still, I prefer public transport to driving, because there is less traffic and it is better for the environment."],
+      ua:["Громадський транспорт у моєму місті досить хороший і не дуже дорогий.",
+          "Є автобуси, трамваї та метро, тож дістатися будь-куди легко.",
+          "Я зазвичай їжджу на роботу автобусом, бо він зупиняється біля мого будинку.",
+          "У годину пік автобуси часто переповнені, а іноді запізнюються.",
+          "Проте я віддаю перевагу громадському транспорту перед керуванням авто, бо там менше заторів і це краще для довкілля."],
+      vocab:[["public transport","громадський транспорт"],["underground","метро"],["crowded","переповнений"],["traffic","затори/рух"],["environment","довкілля"],["to prefer","віддавати перевагу"]]
+    },
+    {
+      title:"A Trip to the Seaside", titleUa:"Поїздка на море", level:"B1",
+      en:["Last summer my family and I went on a trip to the seaside.",
+          "We travelled by train, which took about six hours, but the journey was comfortable.",
+          "When we arrived, the weather was warm and sunny, so we spent most days on the beach.",
+          "In the evenings we walked along the promenade and tried some local food.",
+          "It was one of the most relaxing holidays we have ever had, and we are already planning to go again next year."],
+      ua:["Минулого літа ми з родиною поїхали на море.",
+          "Ми їхали потягом, що зайняло близько шести годин, але подорож була комфортною.",
+          "Коли ми приїхали, погода була теплою й сонячною, тож більшість днів ми провели на пляжі.",
+          "Увечері ми гуляли набережною і куштували місцеву їжу.",
+          "Це була одна з найприємніших відпусток, які в нас були, і ми вже плануємо поїхати знову наступного року."],
+      vocab:[["trip","поїздка"],["journey","подорож"],["beach","пляж"],["promenade","набережна"],["local","місцевий"],["relaxing","розслаблюючий"],["to plan","планувати"]]
     }
   ];
 
@@ -416,7 +491,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 
   // ---------- theory data ----------
   const THEORY = [
-    {title:"Дієслово to be (am/is/are)", body:`
+    {title:"Дієслово to be (am/is/are)", level:"A1", body:`
       <p>Дієслово <b>to be</b> — найважливіше дієслово в англійській мові. Воно змінюється залежно від займенника:</p>
       <ul>
         <li><b>I am</b> (I'm) — я є</li>
@@ -428,7 +503,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       <p>Заперечення утворюється додаванням <b>not</b>: <i>I am not</i>, <i>he is not (isn't)</i>, <i>they are not (aren't)</i>.</p>
       <p>Питання: змінюємо порядок слів — <b>Are you tired?</b>, <b>Is he at home?</b></p>
     `},
-    {title:"Present Simple — теперішній простий час", body:`
+    {title:"Present Simple — теперішній простий час", level:"A1", body:`
       <p>Використовується для звичок, фактів і розкладу.</p>
       <ul>
         <li>Стверджувальна форма: <b>I / you / we / they + дієслово</b>; <b>he / she / it + дієслово + -s</b></li>
@@ -440,7 +515,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       <span class="eq-ex"><b>Do you speak English?</b> <i>— Ти розмовляєш англійською?</i></span>
       <p>Слова-маркери: always, usually, often, sometimes, never, every day.</p>
     `},
-    {title:"Present Continuous — теперішній тривалий час", body:`
+    {title:"Present Continuous — теперішній тривалий час", level:"A1", body:`
       <p>Використовується для дій, які відбуваються прямо зараз, або запланованих подій у майбутньому.</p>
       <p>Форма: <b>am / is / are + дієслово + -ing</b></p>
       <span class="eq-ex"><b>I am reading a book now.</b> <i>— Я зараз читаю книгу.</i></span>
@@ -448,7 +523,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       <span class="eq-ex"><b>Is she working today?</b> <i>— Вона працює сьогодні?</i></span>
       <p>Слова-маркери: now, at the moment, right now, today, Look!, Listen!</p>
     `},
-    {title:"Past Simple — минулий простий час", body:`
+    {title:"Past Simple — минулий простий час", level:"A2", body:`
       <p>Використовується для завершених дій у минулому.</p>
       <ul>
         <li>Правильні дієслова: +<b>-ed</b> (work → worked, play → played)</li>
@@ -461,7 +536,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       <span class="eq-ex"><b>Did you see that film?</b> <i>— Ти бачив цей фільм?</i></span>
       <p>Слова-маркери: yesterday, last week/year, ago, in 2015.</p>
     `},
-    {title:"Артиклі a / an / the", body:`
+    {title:"Артиклі a / an / the", level:"A1", body:`
       <p><b>a / an</b> — неозначений артикль, вживається з обчислюваними іменниками в однині, коли предмет називається вперше або не конкретизується.</p>
       <ul>
         <li><b>a</b> — перед приголосним звуком: <i>a book, a car</i></li>
@@ -471,7 +546,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       <span class="eq-ex"><b>I have a dog. The dog is black.</b> <i>— У мене є собака. Собака чорна.</i></span>
       <p>Артикль не вживається з незлічуваними іменниками у загальному значенні (water, love) та більшістю власних назв.</p>
     `},
-    {title:"Множина іменників", body:`
+    {title:"Множина іменників", level:"A1", body:`
       <p>Більшість іменників утворюють множину додаванням <b>-s</b>: book → books, car → cars.</p>
       <ul>
         <li>Після -s, -sh, -ch, -x, -o додається <b>-es</b>: box → boxes, watch → watches</li>
@@ -480,7 +555,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       </ul>
       <span class="eq-ex"><b>There are three children in the room.</b> <i>— У кімнаті троє дітей.</i></span>
     `},
-    {title:"Займенники", body:`
+    {title:"Займенники", level:"A1", body:`
       <p>Особові займенники (підмет): I, you, he, she, it, we, they.</p>
       <p>Об'єктні займенники (додаток): me, you, him, her, it, us, them.</p>
       <p>Присвійні прикметники: my, your, his, her, its, our, their.</p>
@@ -488,7 +563,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       <span class="eq-ex"><b>This is my book. It is mine.</b> <i>— Це моя книга. Вона моя.</i></span>
       <span class="eq-ex"><b>She gave the ball to him.</b> <i>— Вона віддала м'яч йому.</i></span>
     `},
-    {title:"Прийменники місця та часу", body:`
+    {title:"Прийменники місця та часу", level:"A2", body:`
       <p><b>Час:</b></p>
       <ul>
         <li><b>at</b> — точний час: at 5 o'clock, at night</li>
@@ -503,14 +578,14 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       </ul>
       <span class="eq-ex"><b>The book is on the table in the living room.</b> <i>— Книга на столі у вітальні.</i></span>
     `},
-    {title:"Прикметники: порівняння", body:`
+    {title:"Прикметники: порівняння", level:"A2", body:`
       <p>Короткі прикметники (1 склад): +<b>-er / -est</b>: small → smaller → the smallest.</p>
       <p>Довгі прикметники (2+ склади): <b>more / the most</b>: beautiful → more beautiful → the most beautiful.</p>
       <p>Винятки: good → better → the best; bad → worse → the worst; far → farther → the farthest.</p>
       <span class="eq-ex"><b>This car is faster than that one.</b> <i>— Ця машина швидша за ту.</i></span>
       <span class="eq-ex"><b>She is the most intelligent student.</b> <i>— Вона найрозумніша учениця.</i></span>
     `},
-    {title:"Модальні дієслова can, must, should", body:`
+    {title:"Модальні дієслова can, must, should", level:"A2", body:`
       <ul>
         <li><b>can</b> — вміння, можливість, дозвіл: <i>I can swim.</i> (Я вмію плавати.)</li>
         <li><b>must</b> — обов'язок, необхідність: <i>You must wear a seatbelt.</i> (Ви повинні пристебнутися.)</li>
@@ -519,7 +594,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       <p>Після модальних дієслів дієслово завжди у базовій формі без <b>to</b>. Заперечення: can't, mustn't, shouldn't.</p>
       <span class="eq-ex"><b>You mustn't smoke here.</b> <i>— Тут не можна курити.</i></span>
     `},
-    {title:"Питальні слова", body:`
+    {title:"Питальні слова", level:"A1", body:`
       <ul>
         <li><b>What</b> — що/який</li>
         <li><b>Where</b> — де</li>
@@ -533,7 +608,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       <span class="eq-ex"><b>Where do you live?</b> <i>— Де ти живеш?</i></span>
       <span class="eq-ex"><b>How much does it cost?</b> <i>— Скільки це коштує?</i></span>
     `},
-    {title:"There is / There are", body:`
+    {title:"There is / There are", level:"A1", body:`
       <p>Конструкція для позначення наявності чогось.</p>
       <ul>
         <li><b>There is</b> + однина / незлічуваний іменник</li>
@@ -543,14 +618,14 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       <span class="eq-ex"><b>There are five books on the shelf.</b> <i>— На полиці п'ять книг.</i></span>
       <p>Заперечення: There isn't / There aren't. Питання: Is there...? / Are there...?</p>
     `},
-    {title:"Майбутній час: going to та will", body:`
+    {title:"Майбутній час: going to та will", level:"A2", body:`
       <p><b>be going to</b> — заплановані дії або очевидні прогнози:</p>
       <span class="eq-ex"><b>I am going to visit my parents.</b> <i>— Я збираюся відвідати батьків.</i></span>
       <p><b>will</b> — рішення, прийняті в момент розмови, обіцянки, прогнози без доказів:</p>
       <span class="eq-ex"><b>I think it will rain tomorrow.</b> <i>— Думаю, завтра піде дощ.</i></span>
       <p>Заперечення: won't (will not), not going to.</p>
     `},
-    {title:"Кількісні слова: some / any / much / many / a lot of", body:`
+    {title:"Кількісні слова: some / any / much / many / a lot of", level:"B1", body:`
       <ul>
         <li><b>some</b> — у стверджувальних реченнях: I have some money.</li>
         <li><b>any</b> — у заперечних і питальних: I don't have any money. Do you have any questions?</li>
@@ -594,13 +669,13 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     return a;
   }
 
-  function levelBadge(it){
-    const level = it[3] || "A2";
+  function makeLevelBadge(level){
     const badge = document.createElement("span");
     badge.className = "eq-level-badge lvl-" + level.toLowerCase();
     badge.textContent = level;
     return badge;
   }
+  function levelBadge(it){ return makeLevelBadge(it[3] || "A2"); }
 
   function speakEnglish(text){
     if(!("speechSynthesis" in window)) return;
@@ -950,7 +1025,11 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 
     THEORY.forEach((topic, i)=>{
       const item = document.createElement("button"); item.className = "eq-theory-list-item";
-      item.textContent = (i+1) + ". " + topic.title;
+      const row = document.createElement("span"); row.className = "eq-theory-list-row";
+      const text = document.createElement("span"); text.textContent = (i+1) + ". " + topic.title;
+      row.appendChild(text);
+      row.appendChild(makeLevelBadge(topic.level || "A2"));
+      item.appendChild(row);
       item.onclick = ()=>{ state.theoryIndex = i; state.view = "theoryArticle"; render(); };
       wrap.appendChild(item);
     });
@@ -963,8 +1042,11 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 
     const topic = THEORY[state.theoryIndex];
     const kicker = document.createElement("p"); kicker.className = "eq-kicker"; kicker.textContent = "Теорія";
+    const titleRow = document.createElement("div"); titleRow.className = "eq-title-row";
     const title = document.createElement("h1"); title.className = "eq-title"; title.textContent = topic.title;
-    wrap.appendChild(kicker); wrap.appendChild(title);
+    titleRow.appendChild(title);
+    titleRow.appendChild(makeLevelBadge(topic.level || "A2"));
+    wrap.appendChild(kicker); wrap.appendChild(titleRow);
 
     const article = document.createElement("div"); article.className = "eq-theory-article";
     article.innerHTML = topic.body;
@@ -1043,8 +1125,10 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     wrap.appendChild(kicker); wrap.appendChild(title);
 
     READING.forEach((text, i)=>{
-      const item = document.createElement("button"); item.className = "eq-theory-list-item";
-      item.textContent = text.title + " — " + text.titleUa;
+      const item = document.createElement("button"); item.className = "eq-reading-list-item";
+      const label = document.createElement("span"); label.textContent = text.title + " — " + text.titleUa;
+      item.appendChild(label);
+      item.appendChild(makeLevelBadge(text.level || "A2"));
       item.onclick = ()=>{ state.readingIndex = i; state.showTranslation = false; state.view = "readingText"; render(); };
       wrap.appendChild(item);
     });
@@ -1057,8 +1141,11 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 
     const text = READING[state.readingIndex];
     const kicker = document.createElement("p"); kicker.className = "eq-kicker"; kicker.textContent = "Читання";
+    const titleRow = document.createElement("div"); titleRow.className = "eq-title-row";
     const title = document.createElement("h1"); title.className = "eq-title"; title.textContent = text.title;
-    wrap.appendChild(kicker); wrap.appendChild(title);
+    titleRow.appendChild(title);
+    titleRow.appendChild(makeLevelBadge(text.level || "A2"));
+    wrap.appendChild(kicker); wrap.appendChild(titleRow);
 
     const article = document.createElement("div"); article.className = "eq-theory-article";
     text.en.forEach((sentence, i)=>{
