@@ -1694,6 +1694,19 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     currentUtterance = null;
     if(currentAudioEl){ currentAudioEl.pause(); currentAudioEl.currentTime = 0; currentAudioEl = null; }
   }
+  function speakReadingText(readingItem){
+    stopSpeech();
+    const fullText = readingItem.en.join(" ");
+    if(state.voiceGender === "male"){
+      const audio = new Audio("audio_reading/" + audioSlug(readingItem.title) + ".mp3");
+      currentAudioEl = audio;
+      audio.addEventListener("ended", ()=>{ if(currentAudioEl === audio) currentAudioEl = null; });
+      audio.addEventListener("error", ()=>{ if(currentAudioEl === audio) currentAudioEl = null; speakBrowser(fullText); });
+      audio.play().catch(()=>{ if(currentAudioEl === audio) currentAudioEl = null; speakBrowser(fullText); });
+      return;
+    }
+    speakBrowser(fullText);
+  }
   function speakEnglish(text){
     stopSpeech();
     if(state.voiceGender === "male"){
@@ -2252,7 +2265,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 
     const btnrow = document.createElement("div"); btnrow.className = "eq-btnrow";
     const speakAll = document.createElement("button"); speakAll.className = "eq-btn-secondary"; speakAll.textContent = "🔊 Прослухати текст";
-    speakAll.onclick = ()=> speakEnglish(text.en.join(" "));
+    speakAll.onclick = ()=> speakReadingText(text);
     const toggleBtn = document.createElement("button"); toggleBtn.className = "eq-btn-secondary";
     toggleBtn.textContent = state.showTranslation ? "Сховати переклад" : "Показати переклад";
     toggleBtn.onclick = ()=>{ state.showTranslation = !state.showTranslation; render(); };
