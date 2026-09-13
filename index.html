@@ -8,10 +8,10 @@
 html, body{ height:100%; margin:0; }
 body{ background:#FAF6EF; }
 body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
-:root{ --ink:#1F2A38; --paper:#FAF6EF; --card:#FFFFFF; --card-alt:#F2EEE4; --line:#DCD3C0; --navy:#2E4057; --navy-solid:#2E4057; --gold:#B08D2B; --good:#3F7A54; --good-bg:#EEF6F0; --bad:#B0413E; --bad-bg:#FBEEED; --muted:#6B6459; }
+:root{ --ink:#1F2A38; --paper:#FAF6EF; --card:#FFFFFF; --card-alt:#F2EEE4; --line:#DCD3C0; --navy:#2E4057; --navy-solid:#2E4057; --gold:#B08D2B; --good:#3F7A54; --good-bg:#EEF6F0; --bad:#B0413E; --bad-bg:#FBEEED; --muted:#6B6459; --purple:#7A5EA8; }
 *{box-sizing:border-box;}
 .eq-root{ font-family:"Iowan Old Style","Palatino Linotype",Georgia,"Times New Roman",serif; color:var(--ink); background:var(--paper); padding:64px 18px 60px; max-width:720px; min-height:100vh; margin:0 auto; position:relative; transition:background-color .2s ease, color .2s ease; }
-.eq-root[data-theme="dark"]{ --ink:#E7E1D3; --paper:#141A24; --card:#1E2734; --card-alt:#242F3E; --line:#2C3849; --navy:#6C93C4; --navy-solid:#3E6690; --gold:#E3C567; --good:#5FBE82; --good-bg:#1D3327; --bad:#E2827E; --bad-bg:#3A2323; --muted:#93A1B5; }
+.eq-root[data-theme="dark"]{ --ink:#E7E1D3; --paper:#141A24; --card:#1E2734; --card-alt:#242F3E; --line:#2C3849; --navy:#6C93C4; --navy-solid:#3E6690; --gold:#E3C567; --good:#5FBE82; --good-bg:#1D3327; --bad:#E2827E; --bad-bg:#3A2323; --muted:#93A1B5; --purple:#A78BD1; }
 .eq-top{ position:absolute; top:16px; right:18px; display:flex; justify-content:flex-end; }
 .eq-icon-btn{ width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:var(--card); color:var(--ink); font-size:15px; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; text-decoration:none; }
 .eq-icon-btn:hover{ border-color:var(--gold); }
@@ -27,7 +27,8 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 .eq-tile-name{ font-size:16px; font-weight:600; color:var(--navy); margin-bottom:3px; }
 .eq-tile-count{ font-size:12.5px; color:var(--muted); }
 .eq-back{ background:none; border:none; color:var(--navy); cursor:pointer; font-size:13px; padding:0; font-family:inherit; text-decoration:underline; margin-bottom:18px; display:inline-block; }
-.eq-dirtoggle{ font-family:"Helvetica Neue",Arial,sans-serif; display:flex; gap:8px; margin-bottom:20px; }
+.eq-dirtoggle{ font-family:"Helvetica Neue",Arial,sans-serif; display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+.eq-dirtoggle .eq-dirbtn{ flex:1 1 60px; }
 .eq-dirbtn{ flex:1; text-align:center; padding:11px 14px; font-size:13.5px; border:1px solid var(--line); background:var(--card); color:var(--muted); cursor:pointer; }
 .eq-dirbtn.active{ border-color:var(--navy-solid); background:var(--navy-solid); color:#fff; font-weight:600; }
 .eq-topbar{ font-family:"Helvetica Neue",Arial,sans-serif; display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--muted); margin-bottom:10px; }
@@ -92,6 +93,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
 .eq-level-badge.lvl-a2{ background:var(--gold); }
 .eq-level-badge.lvl-b1{ background:var(--navy-solid); }
 .eq-level-badge.lvl-b2{ background:var(--bad); }
+.eq-level-badge.lvl-c1{ background:var(--purple); }
 .eq-study-front-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .eq-theory-list-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
 .eq-title-row{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:22px; }
@@ -609,6 +611,145 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
       ["convenient","зручний","adj","B1"],["reliable","надійний","adj","B1"],["flexible","гнучкий","adj","B1"],
       ["strict","суворий","adj","B1"],["gentle","лагідний","adj","B1"],["extraordinary","незвичайний","adj","B1"],
       ["remarkable","чудовий/визначний","adj","B1"]
+    ]},
+    {slug:"accessories", label:"Аксесуари та прикраси", items:[
+      ["ring","перстень/каблучка","n","A2"],["necklace","намисто","n","A2"],["bracelet","браслет","n","A2"],
+      ["earrings","сережки","n","A2"],["sunglasses","сонцезахисні окуляри","n","A2"],["jewellery","прикраси","n","B1"],
+      ["backpack","рюкзак","n","A2"],["suitcase","валіза","n","A2"],["purse","гаманець (жіночий)","n","A2"],
+      ["handbag","сумочка","n","A2"],["watch","годинник (наручний)","n","A1"],["cap","кепка","n","A2"],
+      ["beanie","шапка-біні","n","B1"],["tights","колготки","n","B1"],["pyjamas","піжама","n","A2"],
+      ["swimsuit","купальник","n","A2"],["uniform","уніформа","n","A2"],["badge","значок","n","B1"],
+      ["button","ґудзик","n","A2"],["zip","блискавка (застібка)","n","B1"],["pocket","кишеня","n","A2"],
+      ["collar","комір","n","B1"],["sleeve","рукав","n","B1"],["shoelace","шнурок","n","B1"]
+    ]},
+    {slug:"furniture2", label:"Меблі та інтер'єр", items:[
+      ["wardrobe","шафа для одягу","n","A2"],["drawer","шухляда","n","A2"],["cupboard","шафка","n","A2"],
+      ["bookshelf","книжкова полиця","n","A2"],["cushion","подушка (декоративна)","n","B1"],["armchair","крісло","n","A2"],
+      ["cot","дитяче ліжечко","n","B1"],["rug","килимок","n","B1"],["bench","лавка","n","A2"],["stool","табурет","n","B1"],
+      ["cabinet","шафа/тумба","n","B1"],["ceiling fan","стельовий вентилятор","n","B1"],["radiator","радіатор опалення","n","B1"],
+      ["fireplace","камін","n","B1"],["doorbell","дверний дзвінок","n","B1"],["letterbox","поштова скринька","n","B1"],
+      ["fence","паркан","n","A2"],["gate","хвіртка/ворота","n","B1"],["driveway","під'їзна доріжка","n","B2"]
+    ]},
+    {slug:"schoolextra", label:"Шкільне приладдя та освіта", items:[
+      ["chalk","крейда","n","A2"],["marker","маркер","n","A2"],["projector","проєктор","n","B1"],
+      ["playground","дитячий/шкільний майданчик","n","A2"],["principal","директор школи","n","B1"],
+      ["headteacher","директор школи (брит.)","n","B1"],["term","семестр/термін","n","B1"],["semester","семестр","n","B1"],
+      ["scholarship","стипендія","n","B2"],["break","перерва","n","A2"],["textbook","підручник","n","A2"],
+      ["dictionary","словник","n","A2"],["calculator","калькулятор","n","A2"],["whiteboard","біла дошка","n","B1"],
+      ["curriculum","навчальна програма","n","B2"],["assignment","завдання (навчальне)","n","B1"],["essay","есе","n","B1"],
+      ["test","тест/контрольна","n","A1"],["grade","оцінка/клас","n","A2"],["diploma","диплом","n","B1"],
+      ["certificate","сертифікат","n","B1"]
+    ]},
+    {slug:"banking", label:"Банк та фінанси", items:[
+      ["bank account","банківський рахунок","n","A2"],["ATM","банкомат","n","A2"],["interest","відсоток (банківський)","n","B1"],
+      ["currency","валюта","n","B1"],["cheque","чек (банківський)","n","B2"],["to invest","інвестувати","v","B2"],
+      ["investment","інвестиція","n","B2"],["insurance","страхування","n","B1"],["mortgage","іпотека","n","B2"],
+      ["savings","заощадження","n","B1"],["to withdraw","знімати гроші","v","B1"],["to deposit","вносити гроші","v","B1"],
+      ["transaction","транзакція","n","B2"],["balance","баланс (рахунку)","n","B1"],["overdraft","овердрафт","n","C1"],
+      ["financial","фінансовий","adj","B1"],["economic","економічний","adj","B1"],["wealthy","заможний","adj","B1"],
+      ["poor","бідний","adj","A2"],["rich","багатий","adj","A2"]
+    ]},
+    {slug:"crimeextra", label:"Злочини та правопорушення", items:[
+      ["thief","злодій","n","A2"],["to steal","красти","v","A2"],["robbery","пограбування","n","B1"],
+      ["murder","вбивство","n","B1"],["to murder","вбивати","v","B1"],["witness","свідок","n","B1"],
+      ["evidence","доказ","n","B1"],["suspect","підозрюваний","n","B1"],["victim","жертва","n","B1"],
+      ["punishment","покарання","n","B1"],["to arrest","заарештовувати","v","B1"],["handcuffs","наручники","n","B2"],
+      ["detective","детектив","n","B1"],["burglar","грабіжник (зі зломом)","n","B2"],["to escape","втікати","v","B1"],
+      ["weapon","зброя","n","B1"],["gun","пістолет/зброя","n","A2"],["violence","насильство","n","B1"],["gang","банда","n","B1"]
+    ]},
+    {slug:"diningout", label:"У ресторані", items:[
+      ["menu","меню","n","A1"],["waitress","офіціантка","n","A1"],["chef","шеф-кухар","n","A2"],
+      ["starter","закуска","n","B1"],["main course","основна страва","n","B1"],["leftovers","залишки їжі","n","B1"],
+      ["appetite","апетит","n","B1"],["to order","замовляти","v","A1"],["tip","чайові","n","A2"],
+      ["reservation","бронювання (столика)","n","B1"],["to book","бронювати","v","A2"],["vegetarian","вегетаріанець","n","A2"],
+      ["vegan","веган","n","B1"],["allergic","алергічний","adj","B1"]
+    ]},
+    {slug:"disasters", label:"Стихійні лиха", items:[
+      ["earthquake","землетрус","n","A2"],["flood","повінь","n","A2"],["drought","посуха","n","B1"],
+      ["hurricane","ураган","n","B1"],["tornado","торнадо","n","B1"],["tsunami","цунамі","n","B1"],
+      ["volcano","вулкан","n","A2"],["eruption","виверження","n","B2"],["wildfire","лісова пожежа","n","B1"],
+      ["avalanche","лавина","n","B1"],["disaster","катастрофа","n","B1"],["damage","шкода/збиток","n","B1"],
+      ["to destroy","знищувати","v","B1"],["evacuation","евакуація","n","B2"],["to evacuate","евакуювати(ся)","v","B2"],
+      ["shelter","укриття","n","B1"],["warning","попередження","n","B1"]
+    ]},
+    {slug:"emotions3", label:"Емоції: додатково", items:[
+      ["grief","горе/скорбота","n","B2"],["jealousy","ревнощі/заздрість","n","B1"],["hope","надія","n","A2"],
+      ["fear","страх","n","A2"],["anger","гнів","n","B1"],["joy","радість","n","A2"],["disgust","огида","n","B2"],
+      ["shame","сором","n","B1"],["guilt","почуття провини","n","B1"],["relief","полегшення","n","B1"],
+      ["despair","відчай","n","C1"],["delight","захоплення/радість","n","B2"],["frustration","розчарування/фрустрація","n","B2"],
+      ["irritation","роздратування","n","B2"],["contentment","задоволення (станом)","n","C1"],["to comfort","втішати","v","B1"],
+      ["to console","заспокоювати/втішати","v","B2"],["to forgive","прощати","v","B1"],["forgiveness","прощення","n","B2"],
+      ["sympathy","співчуття","n","B1"],["compassion","співчуття (глибоке)","n","C1"]
+    ]},
+    {slug:"bodyparts2", label:"Органи тіла", items:[
+      ["brain","мозок","n","A2"],["lung","легеня","n","B1"],["liver","печінка","n","B1"],["kidney","нирка","n","B1"],
+      ["bone","кістка","n","A2"],["muscle","м'яз","n","A2"],["blood","кров","n","A2"],["skull","череп","n","B2"],
+      ["spine","хребет","n","B2"],["rib","ребро","n","B1"],["vein","вена","n","B1"],["artery","артерія","n","B2"],
+      ["nerve","нерв","n","B1"],["skeleton","скелет","n","B1"],["organ","орган (тіла)","n","B1"],["elbow","лікоть","n","A2"],
+      ["wrist","зап'ясток","n","A2"],["ankle","щиколотка","n","A2"],["thumb","великий палець","n","A2"],
+      ["waist","талія","n","A2"],["hip","стегно (кульшовий суглоб)","n","B1"],["chin","підборіддя","n","A2"],
+      ["cheek","щока","n","A2"],["eyebrow","брова","n","A2"],["eyelash","вія","n","B1"]
+    ]},
+    {slug:"farm", label:"Ферма та сільське господарство", items:[
+      ["crop","врожай/культура","n","B1"],["harvest","врожай (збір)","n","B1"],["to harvest","збирати врожай","v","B1"],
+      ["tractor","трактор","n","A2"],["barn","хлів/сарай","n","B1"],["field","поле","n","A2"],["farmland","сільгоспугіддя","n","B2"],
+      ["livestock","худоба","n","B2"],["hen","курка (несучка)","n","A2"],["shepherd","пастух","n","B2"],
+      ["plough","плуг","n","B2"],["to plant","садити (рослини)","v","A2"],["fertile","родючий","adj","B2"],
+      ["irrigation","зрошення","n","C1"],["greenhouse","теплиця","n","B1"],["orchard","сад (фруктовий)","n","B2"],
+      ["vineyard","виноградник","n","B2"]
+    ]},
+    {slug:"fractions", label:"Дроби та кількість", items:[
+      ["half","половина","other","A1"],["quarter","чверть","other","A2"],["percent","відсоток","other","A2"],
+      ["percentage","відсоткова частка","n","B1"],["double","подвійний/удвічі","other","B1"],["triple","потрійний/утричі","other","B2"],
+      ["dozen","дюжина","n","B1"],["pair","пара","n","A2"],["whole","цілий","adj","A2"],["part","частина","n","A1"],
+      ["average","середній (показник)","adj","B1"],["total","загальна сума","n","A2"],["sum","сума","n","B1"],["amount","кількість/сума","n","A2"]
+    ]},
+    {slug:"travel2", label:"Подорожі: додатково", items:[
+      ["visa","віза","n","A2"],["customs","митниця","n","B1"],["embassy","посольство","n","B1"],["tourist","турист","n","A1"],
+      ["souvenir","сувенір","n","A2"],["guide","гід","n","A2"],["itinerary","маршрут подорожі","n","B2"],
+      ["accommodation","житло/розміщення","n","B1"],["resort","курорт","n","B1"],["cruise","круїз","n","B1"],
+      ["backpacking","подорож із рюкзаком","n","B1"],["departure","відправлення","n","B1"],["arrival","прибуття","n","B1"],
+      ["check-in","реєстрація (на рейс/у готель)","n","B1"],["boarding pass","посадковий талон","n","B1"],
+      ["duty-free","безмитний","adj","B1"],["currency exchange","обмін валют","n","B1"],["jet lag","джетлаг (збій біоритму)","n","B2"],
+      ["sightseeing","огляд визначних місць","n","B1"],["landmark","визначна пам'ятка","n","B1"]
+    ]},
+    {slug:"computer2", label:"Комп'ютер: додатково", items:[
+      ["software","програмне забезпечення","n","B1"],["hardware","апаратне забезпечення","n","B1"],["monitor","монітор","n","A2"],
+      ["printer","принтер","n","A2"],["folder","папка (файлова)","n","A2"],["network","мережа","n","B1"],
+      ["virus","вірус (комп'ютерний)","n","A2"],["update","оновлення","n","A2"],["to update","оновлювати","v","A2"],
+      ["browser","браузер","n","A2"],["search engine","пошукова система","n","B1"],["webcam","вебкамера","n","A2"],
+      ["cursor","курсор","n","B1"],["to install","встановлювати (програму)","v","B1"],["to delete","видаляти","v","A2"],
+      ["shortcut","ярлик/швидкий доступ","n","B2"],["firewall","файрвол","n","B2"]
+    ]},
+    {slug:"sportsextra", label:"Спорт: додатково", items:[
+      ["athlete","спортсмен","n","A2"],["marathon","марафон","n","A2"],["race","перегони/забіг","n","A2"],
+      ["victory","перемога","n","B1"],["defeat","поразка","n","B1"],["tournament","турнір","n","A2"],
+      ["league","ліга","n","B1"],["opponent","суперник","n","B1"],["teammate","товариш по команді","n","A2"],
+      ["captain","капітан (команди)","n","A2"],["whistle","свисток","n","B1"],["score","рахунок (гри)","n","A2"],
+      ["penalty","штрафний удар/пенальті","n","B1"],["foul","порушення правил","n","B1"],["warm-up","розминка","n","B1"],
+      ["stretching","розтяжка","n","B1"],["amateur","аматор","n","B1"],["professional","професіонал","n","B1"],
+      ["spectator","глядач (на матчі)","n","B1"]
+    ]},
+    {slug:"chores", label:"Хатні справи", items:[
+      ["chore","хатня справа","n","B1"],["laundry","прання/білизна","n","A2"],["to tidy","прибирати/наводити лад","v","A2"],
+      ["to vacuum","пилососити","v","A2"],["to mop","мити підлогу (шваброю)","v","B1"],["to dust","витирати пил","v","B1"],
+      ["to make the bed","застеляти ліжко","v","A2"],["to do the dishes","мити посуд","v","A2"],
+      ["to take out the rubbish","виносити сміття","v","A2"],["rubbish","сміття","n","A2"],["bin","смітник","n","A2"],
+      ["mess","безлад","n","B1"],["tidy","охайний","adj","B1"],["messy","неохайний","adj","B1"]
+    ]},
+    {slug:"directions", label:"Напрямки та інструкції", items:[
+      ["to turn left","повернути ліворуч","v","A2"],["to turn right","повернути праворуч","v","A2"],
+      ["straight ahead","прямо вперед","other","A2"],["compass","компас","n","B1"],["distance","відстань","n","A2"],
+      ["nearby","поблизу","other","A2"],["opposite","навпроти","other","A2"],["roundabout","кільцева розв'язка","n","B1"],
+      ["crossroads","перехрестя","n","B1"],["signpost","дороговказ","n","B2"],["route","маршрут","n","B1"],["detour","об'їзд","n","B2"]
+    ]},
+    {slug:"personality2", label:"Характер: додатково", items:[
+      ["cheerful","життєрадісний","adj","B1"],["gloomy","похмурий","adj","B2"],["humble","скромний","adj","B2"],
+      ["arrogant","зарозумілий","adj","B2"],["mean","підлий/скупий","adj","B1"],["cruel","жорстокий","adj","B1"],
+      ["cowardly","боягузливий","adj","B2"],["trustworthy","надійний (кому можна довіряти)","adj","B1"],
+      ["loyal","відданий","adj","B1"],["disloyal","невідданий","adj","B2"],["charming","чарівний (про людину)","adj","B1"],
+      ["aggressive","агресивний","adj","B1"],["vain","марнославний","adj","C1"],["modest","скромний","adj","B1"],
+      ["witty","дотепний","adj","B2"],["clumsy","незграбний","adj","B1"],["graceful","граційний","adj","B2"]
     ]}
   ];
 
@@ -648,7 +789,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     return list;
   })();
 
-  const LEVEL_ORDER = {A1:0, A2:1, B1:2, B2:3};
+  const LEVEL_ORDER = {A1:0, A2:1, B1:2, B2:3, C1:4};
   function byLevel(a, b){
     return (LEVEL_ORDER[a.level || "A2"] ?? 1) - (LEVEL_ORDER[b.level || "A2"] ?? 1);
   }
@@ -1532,7 +1673,7 @@ body:has(.eq-root[data-theme="dark"]){ background:#141A24; }
     wrap.appendChild(search);
 
     const levelRow = document.createElement("div"); levelRow.className = "eq-dirtoggle";
-    [["all","Усі"],["A1","A1"],["A2","A2"],["B1","B1"]].forEach(([val,label])=>{
+    [["all","Усі"],["A1","A1"],["A2","A2"],["B1","B1"],["B2","B2"],["C1","C1"]].forEach(([val,label])=>{
       const btn = document.createElement("button"); btn.className = "eq-dirbtn" + (state.dictLevel===val?" active":""); btn.textContent = label;
       btn.onclick = ()=>{ state.dictLevel = val; render(); };
       levelRow.appendChild(btn);
